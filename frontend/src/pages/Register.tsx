@@ -1,6 +1,77 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { FinalForm, Form } from "../components/Register";
+import { IconArrowNarrowLeft } from "@tabler/icons-react";
 
 const Register = () => {
+  const [isNext, setIsNext] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [validationError, setValidationError] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const handleNext = () => {
+    if (!formData.firstName) {
+      return setValidationError((prev) => ({
+        ...prev,
+        firstName: "Missing Field",
+      }));
+    }
+    if (!formData.lastName) {
+      return setValidationError((prev) => ({
+        ...prev,
+        lastName: "Missing Field",
+      }));
+    }
+    setIsNext(true);
+  };
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+    setValidationError((prev) => ({ ...prev, [e.target.name]: "" }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.email) {
+      return setValidationError((prev) => ({
+        ...prev,
+        email: "Missing Field",
+      }));
+    }
+    if (!formData.password) {
+      return setValidationError((prev) => ({
+        ...prev,
+        password: "Missing Password",
+      }));
+    }
+    if (!formData.confirmPassword) {
+      return setValidationError((prev) => ({
+        ...prev,
+        confirmPassword: "Missing Confirm Password",
+      }));
+    }
+    if (formData.password !== formData.confirmPassword) {
+      return setValidationError((prev) => ({
+        ...prev,
+        confirmPassword: "Password dont match",
+      }));
+    }
+  };
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -14,75 +85,46 @@ const Register = () => {
         </div>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Create and account
+            <h1 className="text-xl flex items-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+              {isNext && (
+                <IconArrowNarrowLeft
+                  onClick={() => setIsNext(false)}
+                  className="cursor-pointer hover:stroke-blue-600"
+                  size={40}
+                  color="gray"
+                />
+              )}
+              Create an account
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
-                  required
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 md:space-y-6"
+              action="#"
+            >
+              {!isNext ? (
+                <Form
+                  formData={formData}
+                  handleNext={handleNext}
+                  validationError={validationError}
+                  handleOnChange={handleOnChange}
                 />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
+              ) : (
+                <FinalForm
+                  formData={formData}
+                  validationError={validationError}
+                  handleOnChange={handleOnChange}
                 />
-              </div>
-              <div>
-                <label
-                  htmlFor="confirm-password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Confirm password
-                </label>
-                <input
-                  type="confirm-password"
-                  name="confirm-password"
-                  id="confirm-password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full  text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:bg-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              >
-                Create an account
-              </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{" "}
-                <Link
-                  to={"/login"}
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                >
-                  Login here
-                </Link>
-              </p>
+              )}
             </form>
+            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+              Already have an account?{" "}
+              <Link
+                to={"/login"}
+                className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+              >
+                Login here
+              </Link>
+            </p>
           </div>
         </div>
       </div>
