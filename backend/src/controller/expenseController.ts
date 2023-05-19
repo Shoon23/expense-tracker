@@ -2,10 +2,6 @@ import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
-import {
-  validateRequiredFields,
-  validateUpdateFields,
-} from "../utils/expenseValidationFields";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
@@ -35,13 +31,6 @@ const createExpense = async (
 ) => {
   const { userId, categoryId, budgetId, name, amount } = req.body;
   try {
-    validateRequiredFields({
-      userId,
-      categoryId,
-      budgetId,
-      name,
-      amount,
-    });
     console.log(req.body);
     const createExpense = await prisma.expense.create({
       data: {
@@ -73,7 +62,6 @@ const updateExpense = async (
 ) => {
   try {
     const expenseUpdatedValue = req.body;
-    validateUpdateFields(expenseUpdatedValue);
 
     const { expenseId, ...other } = expenseUpdatedValue;
     console.log(expenseUpdatedValue);

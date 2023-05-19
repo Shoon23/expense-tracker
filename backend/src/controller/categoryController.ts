@@ -2,11 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
-import {
-  validateRequiredFields,
-  validateUpdateFields,
-} from "../utils/categoryValidationFields";
-
+import { categoryCreateSchema } from "../lib/joiSchema";
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
 
@@ -34,10 +30,11 @@ const createCategory = async (
   res: Response,
   next: NextFunction
 ) => {
-  const categoryDetails = req.body;
   try {
-    validateRequiredFields(categoryDetails);
-    const { userId, name } = categoryDetails;
+    const value = await categoryCreateSchema.validateAsync(req.body, {
+      abortEarly: false,
+    });
+    const { userId, name } = value;
     const create = await prisma.category.create({
       data: {
         userId: Number(userId),
@@ -61,7 +58,6 @@ const updateCategory = async (
   next: NextFunction
 ) => {
   try {
-    validateUpdateFields(req.body);
     const { name, categoryId } = req.body;
     const updateCategory = await prisma.category.update({
       where: {

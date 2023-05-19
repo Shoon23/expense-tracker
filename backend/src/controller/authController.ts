@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
-import authValidationFields from "../utils/authValidationFields";
 import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
 import * as argon2 from "argon2";
 import generateToken from "../utils/generateToken";
 import jwt from "jsonwebtoken";
+import { registerSchema, loginSchema } from "../lib/joiSchema";
 
 const registerController = async (
   req: Request,
@@ -13,8 +13,12 @@ const registerController = async (
   next: NextFunction
 ) => {
   try {
-    const { firstName, lastName, email, password } = req?.body;
-    authValidationFields({ firstName, lastName, email, password }, false);
+    const value = await registerSchema.validateAsync(req.body, {
+      abortEarly: false,
+    });
+
+    const { firstName, lastName, email, password } = value;
+
     const checkUser = await prisma.user.findUnique({
       where: {
         email,
@@ -64,13 +68,12 @@ const loginController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { email, password } = req.body as {
-    email: string;
-    password: string;
-  };
   try {
-    authValidationFields({ email, password }, true);
+    const value = await loginSchema.validateAsync(req.body, {
+      abortEarly: false,
+    });
 
+    const { email, password } = value;
     const checkUser = await prisma.user.findUnique({
       where: {
         email,
