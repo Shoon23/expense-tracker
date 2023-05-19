@@ -17,4 +17,32 @@ const categoryCreateSchema = Joi.object({
   name: Joi.string().required(),
 });
 
-export { registerSchema, loginSchema, categoryCreateSchema };
+const categoryUpdateSchema = Joi.object({
+  categoryId: Joi.number().required(),
+  name: Joi.string().required(),
+});
+
+const expenseCreateSchema = Joi.object({
+  userId: Joi.number().required(),
+  categoryId: Joi.number(),
+  budgetId: Joi.number(),
+  name: Joi.string().required(),
+  amount: Joi.string().required(),
+});
+
+const expenseUpdateSchema = Joi.object({
+  expensId: Joi.number().required(),
+  name: Joi.string(),
+  amount: Joi.string(),
+  categoryId: Joi.number(),
+  budgetId: Joi.number(),
+});
+
+export {
+  registerSchema,
+  loginSchema,
+  categoryCreateSchema,
+  categoryUpdateSchema,
+  expenseCreateSchema,
+  expenseUpdateSchema,
+};

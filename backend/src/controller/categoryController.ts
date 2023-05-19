@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
-import { categoryCreateSchema } from "../lib/joiSchema";
+import { categoryCreateSchema, categoryUpdateSchema } from "../lib/joiSchema";
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
 
@@ -37,7 +38,7 @@ const createCategory = async (
     const { userId, name } = value;
     const create = await prisma.category.create({
       data: {
-        userId: Number(userId),
+        userId: userId,
         name,
       },
     });
@@ -58,10 +59,13 @@ const updateCategory = async (
   next: NextFunction
 ) => {
   try {
-    const { name, categoryId } = req.body;
+    const value = await categoryUpdateSchema.validateAsync(req.body, {
+      abortEarly: false,
+    });
+    const { name, categoryId } = value;
     const updateCategory = await prisma.category.update({
       where: {
-        id: Number(categoryId),
+        id: categoryId,
       },
       data: {
         name,
