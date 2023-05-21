@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import errorController from "./controller/errorController";
 import expenseRoutes from "./routes/expenseRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import budgerRoutes from "./routes/budgetRoutes";
 
 const app = express();
 const port = process.env.PORT || 1234;
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/expense", expenseRoutes);
 app.use("/category", categoryRoutes);
+app.use("/budget", budgerRoutes);
 app.use(errorController);
 
 app.listen(port, () => {

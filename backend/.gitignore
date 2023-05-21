@@ -18,4 +18,3 @@ npm-debug.log*
 # Miscellaneous
 .DS_Store
 Thumbs.db
-nodemon.json

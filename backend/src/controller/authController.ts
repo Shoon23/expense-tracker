@@ -5,7 +5,15 @@ import { Prisma } from "@prisma/client";
 import * as argon2 from "argon2";
 import generateToken from "../utils/generateToken";
 import jwt from "jsonwebtoken";
-import { registerSchema, loginSchema } from "../lib/joiSchema";
+import Joi from "joi";
+
+// req body schema for register
+const registerSchema = Joi.object({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]")).required(),
+});
 
 const registerController = async (
   req: Request,
@@ -56,13 +64,16 @@ const registerController = async (
     });
     res.status(201).json({ ...createUser, accessToken });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      next(new CustomError("Prisma error occurred", 500));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
+
+// req body schema for login
+
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]")).required(),
+});
 const loginController = async (
   req: Request,
   res: Response,
@@ -103,11 +114,7 @@ const loginController = async (
     });
     res.status(201).json({ ...other, accessToken });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      next(new CustomError("Prisma error occurred", 500));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 

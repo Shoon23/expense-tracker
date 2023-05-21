@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-
+import Joi from "joi";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
-import { Prisma } from "@prisma/client";
-import { categoryCreateSchema, categoryUpdateSchema } from "../lib/joiSchema";
+
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
 
@@ -18,14 +17,15 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     });
     res.status(200).json(categoryList);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      next(new CustomError("Prisma error occurred", 500));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
+// req body schema for creating category
+const categoryCreateSchema = Joi.object({
+  userId: Joi.number().required(),
+  name: Joi.string().required(),
+});
 const createCategory = async (
   req: Request,
   res: Response,
@@ -45,13 +45,16 @@ const createCategory = async (
 
     res.status(201).json(create);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      next(new CustomError("Prisma error occurred", 500));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
+
+// req body schema for updating category
+
+const categoryUpdateSchema = Joi.object({
+  categoryId: Joi.number().required(),
+  name: Joi.string().required(),
+});
 
 const updateCategory = async (
   req: Request,
@@ -73,11 +76,7 @@ const updateCategory = async (
     });
     res.status(200).json(updateCategory);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      next(new CustomError("Prisma error occurred", 500));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -102,11 +101,7 @@ const deleteCategory = async (
 
     res.status(204).json({});
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      next(new CustomError("Prisma error occurred", 500));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
