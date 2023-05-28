@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
-
+import { getMonthlyExpenseTrend } from "../../services/api/expense";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,36 +24,39 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top" as const,
-    },
-    title: {
-      display: true,
-      text: "Most Spent",
-    },
-  },
-  maintainAspectRatio: false,
-};
+interface Props {
+  userId: number;
+}
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+const LineChart: React.FC<Props> = ({ userId }) => {
+  const { data: resData } = getMonthlyExpenseTrend(userId);
 
-export const data = {
-  labels,
-  datasets: [
-    {
-      fill: true,
-      label: "Categories",
-      data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Most Spent",
+      },
+    },
+    maintainAspectRatio: false,
+  };
+  const dates = Object?.keys(resData || []);
+
+  const data = {
+    dates,
+    datasets: Object.entries(resData || []).map(([key, value]) => ({
+      fill: false,
+      label: key,
+      data: value,
       borderColor: "rgb(53, 162, 235)",
       backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-  ],
-};
+    })),
+  };
 
-const LineChart = () => {
   return <Line options={options} data={data} />;
 };
 

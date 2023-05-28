@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FinalForm, Form } from "../components/Register";
 import { IconArrowNarrowLeft } from "@tabler/icons-react";
-
+import auth from "../services/api/auth";
 const Register = () => {
   const [isNext, setIsNext] = useState(false);
-
+  const { mutation, errorRes } = auth.register();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -70,6 +70,8 @@ const Register = () => {
         confirmPassword: "Password dont match",
       }));
     }
+    const { confirmPassword, ...other } = formData;
+    mutation.mutateAsync(other);
   };
 
   return (
@@ -96,6 +98,11 @@ const Register = () => {
               )}
               Create an account
             </h1>
+            {errorRes && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                <span className="font-medium">{errorRes}</span>
+              </p>
+            )}
             <form
               onSubmit={handleSubmit}
               className="space-y-4 md:space-y-6"

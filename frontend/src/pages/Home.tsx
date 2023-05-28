@@ -8,8 +8,13 @@ import {
   DoughnutChart,
   TransactionTable,
 } from "../components/Dashboard";
+import { useQueryClient } from "@tanstack/react-query";
+import { iUser } from "../types/user";
 
 const Home = () => {
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return (
     <>
       <div className="p-4 sm:ml-64 flex flex-col gap-2">
@@ -46,7 +51,7 @@ const Home = () => {
           </div>
         </div>
         <div className="w-full h-[400px]">
-          <LineChart />
+          <LineChart userId={user?.id as number} />
         </div>
         <div className="self-center h-[400px]">
           <DoughnutChart />

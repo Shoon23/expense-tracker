@@ -89,6 +89,13 @@ const loginController = async (
       where: {
         email,
       },
+      select: {
+        email: true,
+        lastName: true,
+        firstName: true,
+        id: true,
+        password: true,
+      },
     });
 
     if (!checkUser) {
@@ -140,6 +147,12 @@ const refreshToken = async (
       where: {
         id: checkToken.id,
       },
+      select: {
+        email: true,
+        lastName: true,
+        firstName: true,
+        id: true,
+      },
     });
     if (!checkUser) {
       throw new CustomError("User do not exists", 409);
@@ -148,8 +161,6 @@ const refreshToken = async (
     const refreshToken = generateToken.refreshToken(checkUser.id);
     const accessToken = generateToken.accessToken(checkUser.id);
 
-    const { password, ...other } = checkUser;
-
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "strict",
@@ -157,7 +168,7 @@ const refreshToken = async (
       secure: process.env.NODE_ENV === "production",
       path: "/",
     });
-    res.status(200).json({ ...other, accessToken });
+    res.status(200).json({ ...checkUser, accessToken });
   } catch (error) {
     next(new CustomError("Unauthorized", 401));
   }
