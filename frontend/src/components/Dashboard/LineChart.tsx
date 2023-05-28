@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
-import { getMonthlyExpenseTrend } from "../../services/api/expense";
+import expense from "../../services/api/expense";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,7 +29,23 @@ interface Props {
 }
 
 const LineChart: React.FC<Props> = ({ userId }) => {
-  const { data: resData } = getMonthlyExpenseTrend(userId);
+  const { data: resData } = expense.getMonthlyExpenseTrend(userId);
+
+  const monthLabels = Object.keys(resData ?? []);
+  const expenseValues = Object.values(resData ?? []);
+
+  const data = {
+    labels: monthLabels,
+    datasets: [
+      {
+        label: "Monthly Expenses",
+        data: expenseValues,
+        fill: false,
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.1,
+      },
+    ],
+  };
 
   const options = {
     responsive: true,
@@ -39,25 +55,20 @@ const LineChart: React.FC<Props> = ({ userId }) => {
       },
       title: {
         display: true,
-        text: "Most Spent",
+        text: "Monthly Expense Trend",
       },
     },
     maintainAspectRatio: false,
-  };
-  const dates = Object?.keys(resData || []);
-
-  const data = {
-    dates,
-    datasets: Object.entries(resData || []).map(([key, value]) => ({
-      fill: false,
-      label: key,
-      data: value,
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    })),
   };
 
   return <Line options={options} data={data} />;
 };
 
+//  Object.entries(resData || []).map(([key, value]) => ({
+//       fill: false,
+//       label: key,
+//       data: value,
+//       borderColor: "rgb(53, 162, 235)",
+//       backgroundColor: "rgba(53, 162, 235, 0.5)",
+//     })),
 export default LineChart;

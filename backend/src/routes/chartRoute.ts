@@ -8,4 +8,9 @@ chartRoutes.get(
   chartController.getMonthlyExpenseTrend
 );
 
+chartRoutes.get(
+  "/category-distribution/:userId",
+  chartController.getCategoryDistribution
+);
+
 export default chartRoutes;

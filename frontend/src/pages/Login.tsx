@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     password: "",
   });
 
-  const { mutation, errorRes } = auth.login();
+  const { mutation, errorRes, setErrorRes } = auth.login();
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -21,6 +21,7 @@ const Login: React.FC = () => {
       [e.target.name]: e.target.value,
     }));
     setValidationError((prev) => ({ ...prev, [e.target.name]: "" }));
+    setErrorRes("");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

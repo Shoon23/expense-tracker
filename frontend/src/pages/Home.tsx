@@ -54,7 +54,7 @@ const Home = () => {
           <LineChart userId={user?.id as number} />
         </div>
         <div className="self-center h-[400px]">
-          <DoughnutChart />
+          <DoughnutChart userId={user?.id as number} />
         </div>
         <TransactionTable />
       </div>

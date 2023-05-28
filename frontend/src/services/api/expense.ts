@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { axiosPublic } from "../axiosInstance";
 
+// line chart
 const getMonthlyExpenseTrend = (userId: number) => {
   return useQuery(
     ["pieChart"],
@@ -16,5 +17,20 @@ const getMonthlyExpenseTrend = (userId: number) => {
     }
   );
 };
+// doughnut chart
+const getCategoryDistribution = (userId: number) => {
+  return useQuery(
+    ["doughnutChart"],
+    async () => {
+      const res = await axiosPublic.get(
+        `/chart/category-distribution/${userId}`
+      );
+      return res.data;
+    },
+    {
+      refetchOnMount: true,
+    }
+  );
+};
 
-export { getMonthlyExpenseTrend };
+export default { getMonthlyExpenseTrend, getCategoryDistribution };

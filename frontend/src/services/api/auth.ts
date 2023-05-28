@@ -5,6 +5,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+// Login Mutation
 const login = () => {
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -35,8 +36,11 @@ const login = () => {
   return {
     mutation,
     errorRes,
+    setErrorRes,
   };
 };
+
+// Register Mutation
 
 const register = () => {
   const queryClient = useQueryClient();
@@ -68,9 +72,11 @@ const register = () => {
   return {
     mutation,
     errorRes,
+    setErrorRes,
   };
 };
 
+// refresh auth tokens
 const refreshToken = (accessToken: string) => {
   console.log(accessToken);
   console.log(accessToken ? false : true);

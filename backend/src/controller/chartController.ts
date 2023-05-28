@@ -39,6 +39,46 @@ const getMonthlyExpenseTrend = async (
   }
 };
 
+const getCategoryDistribution = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.userId;
+  try {
+    if (!userId || isNaN(Number(userId))) {
+      throw new CustomError("Invalid or Missing UserId", 401);
+    }
+
+    const categoryExpenses = await prisma.category.findMany({
+      where: {
+        userId: Number(userId),
+      },
+      select: {
+        expenses: {
+          select: {
+            amount: true,
+          },
+        },
+        name: true,
+      },
+    });
+
+    const categoryDistribution = categoryExpenses.map((category) => ({
+      category: category.name,
+      totalExpenses: category.expenses.reduce(
+        (total, expense) => total + parseInt(expense.amount),
+        0
+      ),
+    }));
+
+    res.status(200).json(categoryDistribution);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getMonthlyExpenseTrend,
+  getCategoryDistribution,
 };

@@ -5,7 +5,7 @@ import { IconArrowNarrowLeft } from "@tabler/icons-react";
 import auth from "../services/api/auth";
 const Register = () => {
   const [isNext, setIsNext] = useState(false);
-  const { mutation, errorRes } = auth.register();
+  const { mutation, errorRes, setErrorRes } = auth.register();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -42,6 +42,7 @@ const Register = () => {
       [e.target.name]: e.target.value,
     }));
     setValidationError((prev) => ({ ...prev, [e.target.name]: "" }));
+    setErrorRes("");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
