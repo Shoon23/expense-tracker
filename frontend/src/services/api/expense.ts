@@ -33,33 +33,33 @@ const getCategoryDistribution = (userId: number) => {
   );
 };
 
-// get recent expense
-type Expense = {
-  expenseList: Array<{
-    amount: string;
-    budget: { name: string };
-    category: { name: string };
-    id: number;
-    name: string;
-  }>;
-  budgetList: {
-    id: number;
-    name: string;
-  }[];
-  recentExpense: {
-    amount: string;
-    budget: null;
-    category: {
-      name: string;
-    };
-    name: string;
-  };
+// get dashboard data
+interface iResultDb {
+  expenseList: Array<iExpense>;
+  budgetList: Array<iDdBudget>;
+}
+const getDashboard = (userId: number): UseQueryResult<iResultDb, unknown> => {
+  return useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/expense/${userId}/dashboard`);
+      return res.data;
+    },
+    refetchOnWindowFocus: true,
+  });
 };
-const getDashboard = (userId: number): UseQueryResult<Expense, unknown> => {
-  return useQuery(["recentExpense"], async () => {
-    const res = await axiosPublic.get(`/expense/${userId}/dashboard`);
 
-    return res?.data;
+// get expenses data
+
+const getAllExpenes = (
+  userId: number
+): UseQueryResult<Array<iExpense>, unknown> => {
+  return useQuery({
+    queryKey: ["expenses"],
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/expense/${userId}`);
+      return res.data;
+    },
   });
 };
 
@@ -67,4 +67,5 @@ export default {
   getMonthlyExpenseTrend,
   getCategoryDistribution,
   getDashboard,
+  getAllExpenes,
 };

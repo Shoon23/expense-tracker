@@ -20,10 +20,12 @@ const Home = () => {
   const [budgetAmount, setBudgetAmount] = useState(0);
   const [budgetSpent, setBudgetSpent] = useState(0);
   const [recentExpense, setRecentExpense] = useState<any>(null);
-  const { data: recentData, isLoading } = expense.getDashboard(
-    user?.id as number
-  );
-
+  const {
+    data: recentData,
+    isLoading,
+    error,
+    isError,
+  } = expense.getDashboard(user?.id as number);
   console.log(recentData);
   const [isOpen, setIsOpen] = useState(false);
 

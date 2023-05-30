@@ -11,11 +11,31 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
     const expenseList = await prisma.expense.findMany({
-      take: 7,
+      take: 10,
       where: {
         AND: [{ userId: Number(userId) }, { isDelete: false }],
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        amount: true,
+        createdAt: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        budget: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
+
     res.status(200).json(expenseList);
   } catch (error) {
     next(error);
@@ -34,6 +54,7 @@ const getDashboard = async (
       throw new CustomError("Invalid or Missing UserId", 401);
     }
     const expenseList = await prisma.expense.findMany({
+      take: 10,
       where: {
         AND: [{ userId: Number(userId) }, { isDelete: false }],
       },

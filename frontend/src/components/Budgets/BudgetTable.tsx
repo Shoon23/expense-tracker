@@ -1,7 +1,8 @@
 import React from "react";
 import { PopUpDeleteModal } from "../common";
-import { UpdateModal } from ".";
-const ExpenseTable = () => {
+import ViewMoreModal from "./ViewMoreModal";
+
+const BudgetTable = () => {
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex items-center p-4 gap-3">
@@ -246,13 +247,13 @@ const ExpenseTable = () => {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="px-6 py-3">
-              Expense Name
+              Category Name
             </th>
             <th scope="col" className="px-6 py-3">
-              Amount
+              Description
             </th>
             <th scope="col" className="px-6 py-3">
-              Category
+              Budget
             </th>
             <th scope="col" className="px-6 py-3">
               Date
@@ -263,23 +264,23 @@ const ExpenseTable = () => {
           </tr>
         </thead>
         <tbody>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i: number) => {
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((id: number) => {
             return (
               <tr
-                key={i}
+                key={id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
                 <th
                   scope="row"
-                  className="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
                   Apple MacBook Pro 17"
                 </th>
-                <td className="px-6 py-3">Silver</td>
-                <td className="px-6 py-3">Laptop</td>
-                <td className="px-6 py-3">$2999</td>
-                <td className="px-6 py-3 flex">
-                  <UpdateModal />
+                <td className="px-6 py-2">Silver</td>
+                <td className="px-6 py-2">Laptop</td>
+                <td className="px-6 py-2">$2999</td>
+                <td className="px-6 py-2 flex">
+                  <ViewMoreModal />
                   <PopUpDeleteModal />
                 </td>
               </tr>
@@ -391,4 +392,4 @@ const ExpenseTable = () => {
   );
 };
 
-export default ExpenseTable;
+export default BudgetTable;

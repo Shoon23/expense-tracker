@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import PersistAuth from "./middleware/PersistAuth";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import Expenses from "./pages/Expenses";
+import Budgets from "./pages/Budgets";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
               {
                 path: "/expenses",
                 element: <Expenses />,
+              },
+              {
+                path: "/budgets",
+                element: <Budgets />,
               },
               {
                 path: "/categories",
