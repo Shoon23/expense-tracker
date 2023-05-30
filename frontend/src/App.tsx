@@ -1,7 +1,6 @@
 import Aside from "./components/Layout/Aside";
 import Home from "./pages/Home";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Transactions from "./pages/Transactions";
 import Categories from "./pages/Categories";
 import Add from "./pages/Add";
 import Register from "./pages/Register";
@@ -10,13 +9,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import PersistAuth from "./middleware/PersistAuth";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
+import Expenses from "./pages/Expenses";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     element: <PersistAuth />,
-
     children: [
       {
         element: <ProtectedRoutes />,
@@ -29,8 +28,8 @@ const router = createBrowserRouter([
                 element: <Home />,
               },
               {
-                path: "/transactions",
-                element: <Transactions />,
+                path: "/expenses",
+                element: <Expenses />,
               },
               {
                 path: "/categories",

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { axiosPublic } from "../axiosInstance";
 
@@ -33,4 +33,38 @@ const getCategoryDistribution = (userId: number) => {
   );
 };
 
-export default { getMonthlyExpenseTrend, getCategoryDistribution };
+// get recent expense
+type Expense = {
+  expenseList: Array<{
+    amount: string;
+    budget: { name: string };
+    category: { name: string };
+    id: number;
+    name: string;
+  }>;
+  budgetList: {
+    id: number;
+    name: string;
+  }[];
+  recentExpense: {
+    amount: string;
+    budget: null;
+    category: {
+      name: string;
+    };
+    name: string;
+  };
+};
+const getDashboard = (userId: number): UseQueryResult<Expense, unknown> => {
+  return useQuery(["recentExpense"], async () => {
+    const res = await axiosPublic.get(`/expense/${userId}/dashboard`);
+
+    return res?.data;
+  });
+};
+
+export default {
+  getMonthlyExpenseTrend,
+  getCategoryDistribution,
+  getDashboard,
+};

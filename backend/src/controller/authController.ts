@@ -143,6 +143,7 @@ const refreshToken = async (
       iat: number;
       exp: number;
     };
+
     const checkUser = await prisma.user.findUnique({
       where: {
         id: checkToken.id,

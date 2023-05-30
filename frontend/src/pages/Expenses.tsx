@@ -1,7 +1,7 @@
 import React from "react";
 import { ExpenseTable } from "../components/Manage";
 
-const Transactions = () => {
+const Expenses = () => {
   return (
     <div className="p-4 sm:ml-64">
       <ExpenseTable />
@@ -9,4 +9,4 @@ const Transactions = () => {
   );
 };
 
-export default Transactions;
+export default Expenses;

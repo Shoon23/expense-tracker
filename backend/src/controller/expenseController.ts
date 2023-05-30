@@ -3,8 +3,31 @@ import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
 import Joi from "joi";
-
+// get all expense
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.params.userId;
+  try {
+    if (!userId || isNaN(Number(userId))) {
+      throw new CustomError("Invalid or Missing UserId", 401);
+    }
+    const expenseList = await prisma.expense.findMany({
+      take: 7,
+      where: {
+        AND: [{ userId: Number(userId) }, { isDelete: false }],
+      },
+    });
+    res.status(200).json(expenseList);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get dashboard data
+const getDashboard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const userId = req.params.userId;
   try {
     if (!userId || isNaN(Number(userId))) {
@@ -14,8 +37,57 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
       where: {
         AND: [{ userId: Number(userId) }, { isDelete: false }],
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        amount: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        budget: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
-    res.status(200).json(expenseList);
+
+    const getBudgets = await prisma.budget.findMany({
+      where: {
+        AND: [{ userId: Number(userId) }, { isDelete: false }],
+      },
+      select: {
+        id: true,
+        name: true,
+        amount: true,
+        expenses: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: {
+            amount: true,
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const budgetList = getBudgets.map((budget) => ({
+      ...budget,
+      recentExpense: budget.expenses[0] || null,
+      expenses: budget.expenses.reduce(
+        (total, expense) => Number(total) + Number(expense.amount),
+        0
+      ),
+    }));
+
+    res.status(200).json({ expenseList, budgetList });
   } catch (error) {
     next(error);
   }
@@ -113,6 +185,7 @@ const deleteExpense = async (
 
 export default {
   getAll,
+  getDashboard,
   createExpense,
   updateExpense,
   deleteExpense,

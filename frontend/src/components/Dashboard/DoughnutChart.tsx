@@ -10,9 +10,10 @@ interface Props {
 }
 const DoughnutChart: React.FC<Props> = ({ userId }) => {
   const { data: resData } = expense.getCategoryDistribution(userId);
-  const labels = resData.map((category: any) => category.category);
-  const dataValues = resData.map((category: any) => category.totalExpenses);
-  console.log(labels);
+  const labels = resData?.map((category: any) => category.category) || [];
+  const dataValues =
+    resData?.map((category: any) => category.totalExpenses) || [];
+
   const data = {
     labels: labels,
     datasets: [

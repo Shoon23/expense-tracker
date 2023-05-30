@@ -10,7 +10,7 @@ const PersistAuth = () => {
   const navigate = useNavigate();
 
   const user = queryClient.getQueryData<iUser>(["user"]);
-
+  console.log(user);
   const { isLoading, isError } = auth.refreshToken(user?.accessToken as string);
   if (isError) {
     navigate("/login");

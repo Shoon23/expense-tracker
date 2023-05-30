@@ -9,8 +9,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 const login = () => {
   const queryClient = useQueryClient();
   const location = useLocation();
-  const navigate = useNavigate();
   const from = location?.state?.from?.pathname || "/";
+
+  const navigate = useNavigate();
   const [errorRes, setErrorRes] = useState<string | null>(null);
 
   const mutation = useMutation({

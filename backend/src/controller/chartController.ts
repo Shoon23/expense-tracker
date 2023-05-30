@@ -14,7 +14,7 @@ const getMonthlyExpenseTrend = async (
     }
     const expenses = await prisma.expense.findMany({
       where: {
-        userId: Number(userId),
+        AND: [{ userId: Number(userId) }, { isDelete: false }],
       },
       orderBy: {
         createdAt: "asc",
@@ -52,7 +52,7 @@ const getCategoryDistribution = async (
 
     const categoryExpenses = await prisma.category.findMany({
       where: {
-        userId: Number(userId),
+        AND: [{ userId: Number(userId) }, { isDelete: false }],
       },
       select: {
         expenses: {
