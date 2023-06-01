@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
-import auth from "../services/api/auth";
+import auth from "../services/api/authQuery";
 import Loading from "../components/common/Loading";
 
 const PersistAuth = () => {

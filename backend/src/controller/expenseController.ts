@@ -26,17 +26,36 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
         category: {
           select: {
             name: true,
+            id: true,
           },
         },
         budget: {
           select: {
+            id: true,
             name: true,
           },
         },
       },
     });
-
-    res.status(200).json(expenseList);
+    const budgetOptions = await prisma.budget.findMany({
+      where: {
+        AND: [{ userId: Number(userId) }, { isDelete: false }],
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    const categoryOptions = await prisma.category.findMany({
+      where: {
+        AND: [{ userId: Number(userId) }, { isDelete: false }],
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    res.status(200).json({ expenseList, categoryOptions, budgetOptions });
   } catch (error) {
     next(error);
   }
@@ -152,11 +171,11 @@ const createExpense = async (
 
 // req body schema for updating expense or transaction
 const expenseUpdateSchema = Joi.object({
-  expensId: Joi.number().required(),
+  expenseId: Joi.number().required(),
   name: Joi.string(),
   amount: Joi.string(),
-  categoryId: Joi.number(),
-  budgetId: Joi.number(),
+  categoryId: Joi.number().allow(null),
+  budgetId: Joi.number().allow(null),
 });
 const updateExpense = async (
   req: Request,
@@ -165,6 +184,7 @@ const updateExpense = async (
 ) => {
   try {
     const value = await expenseUpdateSchema.validateAsync(req.body);
+
     const { expenseId, ...other } = value;
 
     const updateExpense = await prisma.expense.update({
@@ -172,6 +192,21 @@ const updateExpense = async (
         id: expenseId,
       },
       data: other,
+      select: {
+        id: true,
+        name: true,
+        amount: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        budget: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
     res.status(200).json(updateExpense);
   } catch (error) {

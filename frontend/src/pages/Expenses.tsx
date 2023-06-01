@@ -1,6 +1,6 @@
 import React from "react";
 import { ExpenseTable } from "../components/Expenses";
-import expense from "../services/api/expense";
+import expense from "../services/api/expenseQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
 const Expenses = () => {

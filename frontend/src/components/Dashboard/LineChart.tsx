@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
-import expense from "../../services/api/expense";
+import expenseQuery from "../../services/api/expenseQuery";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,7 +29,7 @@ interface Props {
 }
 
 const LineChart: React.FC<Props> = ({ userId }) => {
-  const { data: resData } = expense.getMonthlyExpenseTrend(userId);
+  const { data: resData } = expenseQuery.getMonthlyExpenseTrend(userId);
 
   const monthLabels = Object.keys(resData ?? []);
   const expenseValues = Object.values(resData ?? []);

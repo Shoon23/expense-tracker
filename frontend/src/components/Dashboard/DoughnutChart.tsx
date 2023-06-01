@@ -1,7 +1,7 @@
 import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import expense from "../../services/api/expense";
+import expenseQuery from "../../services/api/expenseQuery";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -9,7 +9,7 @@ interface Props {
   userId: number;
 }
 const DoughnutChart: React.FC<Props> = ({ userId }) => {
-  const { data: resData } = expense.getCategoryDistribution(userId);
+  const { data: resData } = expenseQuery.getCategoryDistribution(userId);
   const labels = resData?.map((category: any) => category.category) || [];
   const dataValues =
     resData?.map((category: any) => category.totalExpenses) || [];

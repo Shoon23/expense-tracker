@@ -1,4 +1,9 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import { axiosPublic } from "../axiosInstance";
 
@@ -51,14 +56,66 @@ const getDashboard = (userId: number): UseQueryResult<iResultDb, unknown> => {
 
 // get expenses data
 
+interface iResultExpense {
+  expenseList: Array<iExpense>;
+  budgetOptions: Array<{
+    id: number;
+    name: string;
+  }>;
+  categoryOptions: Array<{
+    id: number;
+    name: string;
+  }>;
+}
 const getAllExpenes = (
   userId: number
-): UseQueryResult<Array<iExpense>, unknown> => {
+): UseQueryResult<iResultExpense, unknown> => {
   return useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
       const res = await axiosPublic.get(`/expense/${userId}`);
       return res.data;
+    },
+  });
+};
+// update expense
+const updateExpense = (
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (expense: {
+      name?: string;
+      amount?: string;
+      expenseId: number;
+      categoryId?: number | null;
+      budgetId?: number | null;
+    }) => {
+      const res = await axiosPublic.put("/expense", expense);
+      return res.data;
+    },
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries(["expenses"]);
+      setShowModal(false);
+    },
+  });
+};
+
+// delete expense
+
+const deleteExpense = (
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (expenseId: number) => {
+      const res = await axiosPublic.delete(`expense/${expenseId}`);
+      return res.data;
+    },
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries(["expenses"]);
+      setShowModal(false);
     },
   });
 };
@@ -68,4 +125,6 @@ export default {
   getCategoryDistribution,
   getDashboard,
   getAllExpenes,
+  updateExpense,
+  deleteExpense,
 };

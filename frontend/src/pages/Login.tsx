@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import auth from "../services/api/auth";
+import authQuery from "../services/api/authQuery";
 import { useState } from "react";
 import { iLoginCredentials } from "../types/user";
 
@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     password: "",
   });
 
-  const { mutation, errorRes, setErrorRes } = auth.login();
+  const { mutation, errorRes, setErrorRes } = authQuery.login();
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({

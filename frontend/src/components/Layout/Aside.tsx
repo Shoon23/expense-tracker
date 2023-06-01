@@ -5,6 +5,7 @@ import {
   IconArrowBarToLeft,
   IconPlus,
 } from "@tabler/icons-react";
+import { Toaster } from "react-hot-toast";
 
 const Aside = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -34,6 +35,7 @@ const Aside = () => {
 
   return (
     <>
+      <Toaster />
       <button
         onClick={handleClick}
         data-drawer-target="default-sidebar"

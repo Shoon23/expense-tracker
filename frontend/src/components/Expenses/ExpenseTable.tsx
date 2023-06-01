@@ -1,14 +1,15 @@
-import React from "react";
 import { PopUpDeleteModal } from "../common";
-import { UpdateModal } from ".";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../../types/user";
-import expense from "../../services/api/expense";
+import expenseQuery from "../../services/api/expenseQuery";
+import UpdateBtn from "./UpdateBtn";
+
 const ExpenseTable = () => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<iUser>(["user"]);
-  const { data } = expense.getAllExpenes(user?.id as number);
-  console.log(data);
+  const { data } = expenseQuery.getAllExpenes(user?.id as number);
+
+  const handleDelete = (expenseId: number) => {};
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex items-center p-4 gap-3">
@@ -273,7 +274,7 @@ const ExpenseTable = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.map((expense) => {
+          {data?.expenseList.map((expense) => {
             return (
               <tr
                 key={expense.id}
@@ -293,8 +294,17 @@ const ExpenseTable = () => {
                 <td className="px-6 py-3">{expense.createdAt}</td>
 
                 <td className="px-6 py-3 flex gap-1">
-                  <UpdateModal />
-                  <PopUpDeleteModal />
+                  <UpdateBtn
+                    expense={expense}
+                    budgetOptions={data.budgetOptions}
+                    categoryOptions={data.categoryOptions}
+                  />
+
+                  <PopUpDeleteModal
+                    prompt="Are you sure you want to delete this expense?"
+                    id={expense.id}
+                    deleteQuery={expenseQuery.deleteExpense}
+                  />
                 </td>
               </tr>
             );

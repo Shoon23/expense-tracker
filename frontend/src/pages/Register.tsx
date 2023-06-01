@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FinalForm, Form } from "../components/Register";
 import { IconArrowNarrowLeft } from "@tabler/icons-react";
-import auth from "../services/api/auth";
+import authQuery from "../services/api/authQuery";
 const Register = () => {
   const [isNext, setIsNext] = useState(false);
-  const { mutation, errorRes, setErrorRes } = auth.register();
+  const { mutation, errorRes, setErrorRes } = authQuery.register();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

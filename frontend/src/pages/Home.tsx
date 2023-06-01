@@ -10,7 +10,7 @@ import {
 } from "../components/Dashboard";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
-import expense from "../services/api/expense";
+import expenseQuery from "../services/api/expenseQuery";
 import { useState } from "react";
 
 const Home = () => {
@@ -25,7 +25,7 @@ const Home = () => {
     isLoading,
     error,
     isError,
-  } = expense.getDashboard(user?.id as number);
+  } = expenseQuery.getDashboard(user?.id as number);
   console.log(recentData);
   const [isOpen, setIsOpen] = useState(false);
 
