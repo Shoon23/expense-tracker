@@ -1,4 +1,5 @@
 import {
+  RefetchOptions,
   UseQueryResult,
   useMutation,
   useQuery,
@@ -6,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useState } from "react";
 import { axiosPublic } from "../axiosInstance";
+import { fa } from "@faker-js/faker";
 
 // line chart
 const getMonthlyExpenseTrend = (userId: number) => {
@@ -68,14 +70,16 @@ interface iResultExpense {
   }>;
 }
 const getAllExpenes = (
-  userId: number
-): UseQueryResult<iResultExpense, unknown> => {
-  return useQuery({
-    queryKey: ["expenses"],
-    queryFn: async () => {
-      const res = await axiosPublic.get(`/expense/${userId}`);
-      return res.data;
-    },
+  userId: number,
+  page: number,
+
+  searchKey?: string
+) => {
+  return useQuery<iResultExpense, unknown>(["expenses", page], async () => {
+    const res = await axiosPublic.get(`/expense/${userId}`, {
+      params: { searchKey, page },
+    });
+    return res.data;
   });
 };
 // update expense
@@ -119,6 +123,23 @@ const deleteExpense = (
     },
   });
 };
+// find expense
+const findExpense = (userId: number, searchKey: string, isSearch: boolean) => {
+  const queryClient = useQueryClient();
+
+  return useQuery(
+    ["expenses"],
+    async () => {
+      const res = await axiosPublic.get(
+        `/expense/${userId}?searchKey=${searchKey}`
+      );
+      return res.data;
+    },
+    {
+      enabled: isSearch,
+    }
+  );
+};
 
 export default {
   getMonthlyExpenseTrend,
@@ -127,4 +148,5 @@ export default {
   getAllExpenes,
   updateExpense,
   deleteExpense,
+  findExpense,
 };

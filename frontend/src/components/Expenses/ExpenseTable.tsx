@@ -3,13 +3,29 @@ import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../../types/user";
 import expenseQuery from "../../services/api/expenseQuery";
 import UpdateBtn from "./UpdateBtn";
+import { useState } from "react";
 
 const ExpenseTable = () => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<iUser>(["user"]);
-  const { data } = expenseQuery.getAllExpenes(user?.id as number);
+  const [searchKey, setSearchKey] = useState<string>("");
+  const [page, setPage] = useState(1);
 
-  const handleDelete = (expenseId: number) => {};
+  const { data, refetch } = expenseQuery.getAllExpenes(
+    user?.id as number,
+    page,
+    searchKey
+  );
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      refetch();
+    }
+  };
+
+  const searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(e.target.value);
+  };
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex items-center p-4 gap-3">
@@ -32,7 +48,11 @@ const ExpenseTable = () => {
               ></path>
             </svg>
           </div>
+
           <input
+            onKeyDown={handleSearch}
+            onChange={searchOnChange}
+            value={searchKey}
             type="text"
             id="table-search"
             className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -326,7 +346,12 @@ const ExpenseTable = () => {
           </span>
         </span>
         <ul className="inline-flex items-center -space-x-px">
-          <li>
+          <li
+            onClick={() => {
+              if (page === 1) return;
+              setPage(page - 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -352,43 +377,17 @@ const ExpenseTable = () => {
               href="#"
               className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
-              1
+              {page}
             </a>
           </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              2
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              aria-current="page"
-              className="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-            >
-              3
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              ...
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              100
-            </a>
-          </li>
-          <li>
+
+          <li
+            onClick={() => {
+              if (!data?.expenseList?.length || data?.expenseList?.length <= 0)
+                return;
+              setPage(page + 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"

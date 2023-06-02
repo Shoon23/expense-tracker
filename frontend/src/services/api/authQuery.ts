@@ -53,7 +53,7 @@ const register = () => {
   const mutation = useMutation({
     mutationFn: async (registerData: iRegisterCredentials) => {
       const res = await axiosPublic.post("auth/register", registerData);
-      console.log(res.data);
+
       return res.data;
     },
     onError(error: AxiosError | Error) {
@@ -64,7 +64,6 @@ const register = () => {
       }
     },
     onSuccess(data: AxiosResponse) {
-      console.log(data);
       queryClient.setQueryData(["user"], data);
       navigate(from, { replace: true });
     },
@@ -79,18 +78,15 @@ const register = () => {
 
 // refresh auth tokens
 const refreshToken = (accessToken: string) => {
-  console.log(accessToken);
-  console.log(accessToken ? false : true);
-
   return useQuery(
     ["user"],
     async () => {
       const res = await axiosPublic.get("/auth/refresh");
-      console.log(res.data);
+
       return res.data;
     },
     {
-      enabled: accessToken ? false : true,
+      enabled: !accessToken,
       refetchOnMount: false,
       retry: false,
     }

@@ -1,27 +1,33 @@
 import React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
-import auth from "../services/api/authQuery";
+import authQuery from "../services/api/authQuery";
 import Loading from "../components/common/Loading";
-
+import Expenses from "../pages/Expenses";
 const PersistAuth = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
+  const location = useLocation();
   const user = queryClient.getQueryData<iUser>(["user"]);
-  console.log(user);
-  const { isLoading, isError } = auth.refreshToken(user?.accessToken as string);
-  if (isError) {
-    navigate("/login");
-  }
-  return isLoading ? (
-    <section className="min-h-screen flex items-center justify-center">
-      <Loading />
-    </section>
-  ) : (
-    <Outlet />
+
+  const { isLoading, isError } = authQuery.refreshToken(
+    user?.accessToken as string
   );
+
+  if (isLoading) {
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <Loading />
+      </section>
+    );
+  }
+
+  if (isError) {
+    <Navigate to={"/login"} state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default PersistAuth;

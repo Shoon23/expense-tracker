@@ -2,18 +2,35 @@ import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
-import Joi from "joi";
+import Joi, { number } from "joi";
 // get all expense
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
+  const searchKey = req?.query?.searchKey;
+  const page = req?.query?.page;
+  const limit = req?.query?.limit || 10;
+  const skip = (Number(page) - 1) * Number(limit);
   try {
     if (!userId || isNaN(Number(userId))) {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
+
     const expenseList = await prisma.expense.findMany({
-      take: 10,
+      take: limit as number,
+      skip,
       where: {
-        AND: [{ userId: Number(userId) }, { isDelete: false }],
+        AND: [
+          { userId: Number(userId) },
+          { isDelete: false },
+          searchKey
+            ? {
+                OR: [
+                  { name: { contains: searchKey as string } },
+                  { amount: { contains: searchKey as string } },
+                ],
+              }
+            : {},
+        ],
       },
       orderBy: {
         createdAt: "desc",
@@ -213,7 +230,7 @@ const updateExpense = async (
     next(error);
   }
 };
-
+// delete expense
 const deleteExpense = async (
   req: Request,
   res: Response,
