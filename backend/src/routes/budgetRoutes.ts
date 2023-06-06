@@ -1,16 +1,18 @@
 import { Router } from "express";
 import budgetController from "../controller/budgetController";
-const budgerRoutes = Router();
+const budgetRoutes = Router();
 
 // get all budgets
-budgerRoutes.get("/:userId", budgetController.getAll);
+budgetRoutes.get("/:userId", budgetController.getAll);
+// get budget as options
+budgetRoutes.get("/:userId/options", budgetController.getAsOptions);
 // create budget
-budgerRoutes.post("/", budgetController.createBudget);
+budgetRoutes.post("/", budgetController.createBudget);
 // update budget
-budgerRoutes.put("/", budgetController.updateBudget);
+budgetRoutes.put("/", budgetController.updateBudget);
 // delete budget
-budgerRoutes.delete("/:budgetId", budgetController.deleteBudget);
+budgetRoutes.delete("/:budgetId", budgetController.deleteBudget);
 // get budget transactions
-budgerRoutes.get("/:budgetId/transactions", budgetController.getAllExpense);
+budgetRoutes.get("/:budgetId/transactions", budgetController.getAllExpense);
 // get budget summary
-export default budgerRoutes;
+export default budgetRoutes;

@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import expenseQuery from "../../services/api/expenseQuery";
 interface Props {
-  budgetOptions: Array<{
-    id: number;
-    name: string;
-  }>;
-  categoryOptions: Array<{
-    id: number;
-    name: string;
-  }>;
+  budgetOptions:
+    | Array<{
+        id: number;
+        name: string;
+      }>
+    | undefined;
+  categoryOptions:
+    | Array<{
+        id: number;
+        name: string;
+      }>
+    | undefined;
   expense: iExpense;
 
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,38 +24,34 @@ const UpdateModal: React.FC<Props> = ({
   categoryOptions,
   setShowModal,
 }) => {
-  useEffect(() => {
-    setExpenseData({
-      name: expense.name,
-      amount: expense.amount,
-      expenseId: expense.id,
-      budgetId: expense?.budget?.id,
-      categoryId: expense?.category?.id,
-    });
-
-    return () => {
-      setExpenseData({
-        name: "",
-        amount: "",
-        expenseId: 0,
-        categoryId: 0,
-        budgetId: 0,
-      });
-    };
-  }, []);
-  const [expenseData, setExpenseData] = useState<{
-    name?: string;
-    amount?: string;
-    expenseId: number;
-    categoryId?: number;
-    budgetId?: number;
-  }>({
+  const initialExpenseData = {
     name: "",
     amount: "",
     expenseId: 0,
-    categoryId: 0,
-    budgetId: 0,
-  });
+    categoryId: null,
+    budgetId: null,
+  };
+  const [expenseData, setExpenseData] = useState<{
+    name?: string;
+    amount?: string;
+    expenseId?: number;
+    categoryId?: number | null;
+    budgetId?: number | null;
+  }>(initialExpenseData);
+
+  useEffect(() => {
+    setExpenseData({
+      name: expense?.name,
+      amount: expense?.amount,
+      expenseId: expense?.id,
+      categoryId: expense?.category?.id || null,
+      budgetId: expense?.budget?.id || null,
+    });
+
+    return () => {
+      setExpenseData(initialExpenseData);
+    };
+  }, []);
 
   const [validationError, setValidationError] = useState({
     name: "",
@@ -92,11 +92,12 @@ const UpdateModal: React.FC<Props> = ({
     }
 
     const updateData = expenseData;
-    if (updateData?.budgetId === expense?.budget?.id) {
-      delete updateData?.budgetId;
+
+    if (updateData.categoryId === expense?.category?.id) {
+      delete updateData.categoryId;
     }
-    if (updateData?.categoryId === expense?.category?.id) {
-      delete updateData?.categoryId;
+    if (updateData.budgetId === expense?.budget?.id) {
+      delete updateData.budgetId;
     }
     if (updateData.amount === expense.amount) {
       delete updateData.amount;
@@ -104,6 +105,7 @@ const UpdateModal: React.FC<Props> = ({
     if (updateData.name === expense.name) {
       delete updateData.name;
     }
+    console.log(updateData);
 
     mutateAsync(updateData);
   };
@@ -134,9 +136,9 @@ const UpdateModal: React.FC<Props> = ({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
               <span className="sr-only">Close modal</span>
@@ -165,7 +167,7 @@ const UpdateModal: React.FC<Props> = ({
                       type="text"
                       name="name"
                       id="name"
-                      value={expenseData.name}
+                      value={expenseData?.name || ""}
                       placeholder="Type product name"
                       className={
                         validationError?.name
@@ -193,7 +195,7 @@ const UpdateModal: React.FC<Props> = ({
                       type="number"
                       name="amount"
                       id="amount"
-                      value={expenseData.amount}
+                      value={expenseData?.amount || ""}
                       placeholder="$2999"
                       className={
                         validationError?.amount
@@ -217,28 +219,16 @@ const UpdateModal: React.FC<Props> = ({
                     </label>
                     <select
                       onChange={handleOnChangeDropDown}
+                      value={expenseData?.categoryId || 0}
                       name="categoryId"
-                      id="categoryId"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     >
                       <option value={""}>Select category</option>
 
-                      {categoryOptions.map((category) => {
-                        if (category.name === expense?.category?.name) {
-                          return (
-                            <option
-                              key={category.id}
-                              value={category.id}
-                              selected
-                            >
-                              {category.name}
-                            </option>
-                          );
-                        }
-
+                      {categoryOptions?.map((category) => {
                         return (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
+                          <option key={category?.id} value={category?.id}>
+                            {category?.name}
                           </option>
                         );
                       })}
@@ -254,29 +244,16 @@ const UpdateModal: React.FC<Props> = ({
                     <select
                       onChange={handleOnChangeDropDown}
                       name="budgetId"
-                      id="budgetId"
+                      value={expenseData?.budgetId || 0}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     >
                       <option value={""}>Select budget</option>
-                      {budgetOptions.map((budget) => {
-                        if (budget.name === expense?.budget?.name) {
-                          return (
-                            <option
-                              key={expense.id}
-                              value={expense.budget?.id}
-                              selected
-                            >
-                              {expense.budget.name}
-                            </option>
-                          );
-                        }
 
-                        return (
-                          <option key={budget.id} value={budget.id}>
-                            {budget.name}
-                          </option>
-                        );
-                      })}
+                      {budgetOptions?.map((budget) => (
+                        <option key={budget.id} value={budget?.id}>
+                          {budget.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -284,8 +261,8 @@ const UpdateModal: React.FC<Props> = ({
                   disabled={
                     expense.name === expenseData.name &&
                     expense.amount === expenseData.amount &&
-                    expense.category?.id === expenseData?.categoryId &&
-                    expense.budget?.id === expenseData?.budgetId
+                    expense.category?.id === expenseData.categoryId &&
+                    expense.budget?.id === expenseData.budgetId
                   }
                   type="submit"
                   className="disabled:bg-gray-500 inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 "

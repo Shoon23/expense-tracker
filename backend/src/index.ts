@@ -5,7 +5,7 @@ import cors from "cors";
 import errorController from "./controller/errorController";
 import expenseRoutes from "./routes/expenseRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
-import budgerRoutes from "./routes/budgetRoutes";
+import budgetRoutes from "./routes/budgetRoutes";
 import chartRoutes from "./routes/chartRoute";
 
 const app = express();
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/expense", expenseRoutes);
 app.use("/category", categoryRoutes);
-app.use("/budget", budgerRoutes);
+app.use("/budget", budgetRoutes);
 app.use("/chart", chartRoutes);
 app.use(errorController);
 

@@ -21,6 +21,35 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// get budget as options controller
+const getAsOptions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.userId;
+
+  try {
+    if (!userId || isNaN(Number(userId))) {
+      throw new CustomError("Invalid or Missing UserId", 401);
+    }
+    const budgetOptions = await prisma.budget.findMany({
+      where: {
+        userId: Number(userId),
+        isDelete: false,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    res.status(200).json(budgetOptions);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // req body schema for creating budget
 const budgetCreateSchema = Joi.object({
   userId: Joi.number().required(),
@@ -129,4 +158,5 @@ export default {
   updateBudget,
   deleteBudget,
   getAllExpense,
+  getAsOptions,
 };

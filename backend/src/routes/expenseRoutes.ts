@@ -4,8 +4,10 @@ const expenseRoutes = Router();
 
 // Get all expense
 expenseRoutes.get("/:userId", expenseController.getAll);
-// get recent expense
+// get dashboard data
 expenseRoutes.get("/:userId/dashboard", expenseController.getDashboard);
+// get distinct date for expense
+expenseRoutes.get("/:userId/dates", expenseController.getDistinctDate);
 //Create expense
 expenseRoutes.post("/", expenseController.createExpense);
 //Update expense

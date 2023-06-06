@@ -21,6 +21,34 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// get category as options
+const getAsOptions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.userId;
+
+  try {
+    if (!userId || isNaN(Number(userId))) {
+      throw new CustomError("Invalid or Missing UserId", 401);
+    }
+    const categoryOptions = await prisma.category.findMany({
+      where: {
+        userId: Number(userId),
+        isDelete: false,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    res.status(200).json(categoryOptions);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // req body schema for creating category
 const categoryCreateSchema = Joi.object({
   userId: Joi.number().required(),
@@ -105,4 +133,10 @@ const deleteCategory = async (
   }
 };
 
-export default { getAll, createCategory, updateCategory, deleteCategory };
+export default {
+  getAll,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getAsOptions,
+};

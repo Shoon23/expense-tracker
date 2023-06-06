@@ -68,20 +68,44 @@ interface iResultExpense {
     id: number;
     name: string;
   }>;
+  isLastPage: boolean;
 }
 const getAllExpenes = (
   userId: number,
   page: number,
-
-  searchKey?: string
+  searchKey?: string,
+  budgetFilter?: number,
+  categoryFilter?: number,
+  dateFilter?: number
 ) => {
   return useQuery<iResultExpense, unknown>(["expenses", page], async () => {
     const res = await axiosPublic.get(`/expense/${userId}`, {
-      params: { searchKey, page },
+      params: {
+        searchKey,
+        page,
+        budgetFilter,
+        categoryFilter,
+        dateFilter,
+      },
     });
     return res.data;
   });
 };
+// get date as a option
+
+const getDates = (userId: number) => {
+  return useQuery<
+    Array<{
+      id: number;
+      createdAt: string;
+    }>,
+    unknown
+  >(["dateExpenseOptions"], async () => {
+    const res = await axiosPublic.get(`/expense/${userId}/dates`);
+    return res.data;
+  });
+};
+
 // update expense
 const updateExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -91,7 +115,7 @@ const updateExpense = (
     mutationFn: async (expense: {
       name?: string;
       amount?: string;
-      expenseId: number;
+      expenseId?: number | null;
       categoryId?: number | null;
       budgetId?: number | null;
     }) => {
@@ -149,4 +173,5 @@ export default {
   updateExpense,
   deleteExpense,
   findExpense,
+  getDates,
 };

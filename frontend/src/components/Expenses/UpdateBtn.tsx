@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import { UpdateModal } from ".";
 
 interface Props {
-  budgetOptions: Array<{
-    id: number;
-    name: string;
-  }>;
-  categoryOptions: Array<{
-    id: number;
-    name: string;
-  }>;
+  budgetOptions:
+    | Array<{
+        id: number;
+        name: string;
+      }>
+    | undefined;
+  categoryOptions:
+    | Array<{
+        id: number;
+        name: string;
+      }>
+    | undefined;
   expense: iExpense;
 }
 

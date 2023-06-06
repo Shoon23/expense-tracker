@@ -4,6 +4,9 @@ const categoryRoutes = Router();
 
 // get all categories
 categoryRoutes.get("/:userId", categoryController.getAll);
+// get category as options
+categoryRoutes.get("/:userId/options", categoryController.getAsOptions);
+
 // create category
 categoryRoutes.post("/", categoryController.createCategory);
 // update category

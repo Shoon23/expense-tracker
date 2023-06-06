@@ -2,36 +2,54 @@ import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
-import Joi, { number } from "joi";
+import Joi, { date, number } from "joi";
 // get all expense
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
   const searchKey = req?.query?.searchKey;
+  // pagination
   const page = req?.query?.page;
   const limit = req?.query?.limit || 10;
   const skip = (Number(page) - 1) * Number(limit);
+
+  // filter
+  const categoryFilter = req?.query?.categoryFilter;
+  const budgetFilter = req?.query?.budgetFilter;
+  const dateFilter = req?.query?.dateFilter;
+
   try {
     if (!userId || isNaN(Number(userId))) {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
 
+    const where: any = {
+      userId: Number(userId),
+      isDelete: false,
+    };
+
+    if (searchKey) {
+      where.OR = [
+        { name: { contains: searchKey } },
+        { amount: { contains: searchKey } },
+      ];
+    }
+
+    if (categoryFilter) {
+      where.categoryId = Number(categoryFilter);
+    }
+
+    if (budgetFilter) {
+      where.budgetId = Number(budgetFilter);
+    }
+
+    if (dateFilter) {
+      where.id = Number(dateFilter);
+    }
+
     const expenseList = await prisma.expense.findMany({
       take: limit as number,
       skip,
-      where: {
-        AND: [
-          { userId: Number(userId) },
-          { isDelete: false },
-          searchKey
-            ? {
-                OR: [
-                  { name: { contains: searchKey as string } },
-                  { amount: { contains: searchKey as string } },
-                ],
-              }
-            : {},
-        ],
-      },
+      where,
       orderBy: {
         createdAt: "desc",
       },
@@ -54,25 +72,38 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
     });
-    const budgetOptions = await prisma.budget.findMany({
+
+    const isLastPage = expenseList?.length < Number(limit);
+
+    res.status(200).json({ expenseList, isLastPage });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDistinctDate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.params.userId;
+
+  if (!userId || isNaN(Number(userId))) {
+    throw new CustomError("Invalid or Missing UserId", 401);
+  }
+  try {
+    const expenseDates = await prisma.expense.findMany({
       where: {
-        AND: [{ userId: Number(userId) }, { isDelete: false }],
+        userId: Number(userId),
+        isDelete: false,
       },
+      distinct: ["createdAt"],
       select: {
         id: true,
-        name: true,
+        createdAt: true,
       },
     });
-    const categoryOptions = await prisma.category.findMany({
-      where: {
-        AND: [{ userId: Number(userId) }, { isDelete: false }],
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-    res.status(200).json({ expenseList, categoryOptions, budgetOptions });
+    res.status(200).json(expenseDates);
   } catch (error) {
     next(error);
   }
@@ -257,6 +288,7 @@ const deleteExpense = async (
 };
 
 export default {
+  getDistinctDate,
   getAll,
   getDashboard,
   createExpense,
