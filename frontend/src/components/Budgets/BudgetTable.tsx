@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { PopUpDeleteModal } from "../common";
 import ViewMoreModal from "./ViewMoreModal";
-
+import budgetQuery from "../../services/api/budgetQuery";
+import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import { iUser } from "../../types/user";
 const BudgetTable = () => {
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = budgetQuery.getBudgets(user?.id as number, page);
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex items-center p-4 gap-3">
@@ -253,7 +260,7 @@ const BudgetTable = () => {
               Description
             </th>
             <th scope="col" className="px-6 py-3">
-              Budget
+              Amount
             </th>
             <th scope="col" className="px-6 py-3">
               Date
@@ -264,28 +271,44 @@ const BudgetTable = () => {
           </tr>
         </thead>
         <tbody>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((id: number) => {
-            return (
-              <tr
-                key={id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          {isLoading ? (
+            <div>loading...</div>
+          ) : data?.budgetList && data?.budgetList.length > 0 ? (
+            data?.budgetList.map((budget) => {
+              return (
+                <tr
+                  key={budget.id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
-                  Apple MacBook Pro 17"
-                </th>
-                <td className="px-6 py-2">Silver</td>
-                <td className="px-6 py-2">Laptop</td>
-                <td className="px-6 py-2">$2999</td>
-                <td className="px-6 py-2 flex">
-                  <ViewMoreModal />
-                  <PopUpDeleteModal />
-                </td>
-              </tr>
-            );
-          })}
+                  <th
+                    scope="row"
+                    className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    {budget.name}
+                  </th>
+                  <td className="px-6 py-2">
+                    {budget?.description
+                      ? budget?.description?.length > 15
+                        ? budget?.description?.substring(0, 15) + "..."
+                        : budget?.description
+                      : "None"}
+                  </td>
+                  <td className="px-6 py-2">{budget?.amount}</td>
+                  <td className="px-6 py-2">{budget?.createdAt}</td>
+                  <td className="px-6 py-2 flex">
+                    <ViewMoreModal budget={budget} />
+                    <PopUpDeleteModal
+                      id={budget.id}
+                      prompt="Are you sure you want to delete this budget?"
+                      deleteQuery={budgetQuery.deleteBudget}
+                    />
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <div>empty</div>
+          )}
         </tbody>
       </table>
       <nav
@@ -332,39 +355,7 @@ const BudgetTable = () => {
               1
             </a>
           </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              2
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              aria-current="page"
-              className="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-            >
-              3
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              ...
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              100
-            </a>
-          </li>
+
           <li>
             <a
               href="#"

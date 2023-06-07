@@ -36,17 +36,18 @@ model Category {
 }
 
 model Budget {
-  id        Int       @id @default(autoincrement())
-  userId    Int?
-  User      User?     @relation(fields: [userId], references: [id])
-  name      String    @db.VarChar(255)
-  amount    String    @db.VarChar(255)
-  startAt   DateTime
-  endAt     DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDelete  Boolean   @default(false)
-  expenses  Expense[]
+  id          Int       @id @default(autoincrement())
+  userId      Int?
+  User        User?     @relation(fields: [userId], references: [id])
+  name        String    @db.VarChar(255)
+  amount      String    @db.VarChar(255)
+  description String?   @db.LongText
+  startAt     DateTime
+  endAt       DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDelete    Boolean   @default(false)
+  expenses    Expense[]
 }
 
 model Expense {

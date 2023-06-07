@@ -12,7 +12,7 @@ budgetRoutes.post("/", budgetController.createBudget);
 budgetRoutes.put("/", budgetController.updateBudget);
 // delete budget
 budgetRoutes.delete("/:budgetId", budgetController.deleteBudget);
-// get budget transactions
-budgetRoutes.get("/:budgetId/transactions", budgetController.getAllExpense);
-// get budget summary
+// get budget expenses
+budgetRoutes.get("/:budgetId/expense", budgetController.getAllExpense);
+
 export default budgetRoutes;

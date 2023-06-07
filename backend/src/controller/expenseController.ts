@@ -18,6 +18,9 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const dateFilter = req?.query?.dateFilter;
 
   try {
+    if (!page || isNaN(Number(page))) {
+      throw new CustomError("Invalid or Missing Page Number", 401);
+    }
     if (!userId || isNaN(Number(userId))) {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
@@ -45,42 +48,67 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     if (dateFilter) {
       where.id = Number(dateFilter);
     }
-
-    const expenseList = await prisma.expense.findMany({
-      take: limit as number,
-      skip,
-      where,
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        name: true,
-        amount: true,
-        createdAt: true,
-        category: {
-          select: {
-            name: true,
-            id: true,
+    const [expense, totalCount] = await prisma.$transaction([
+      prisma.expense.findMany({
+        take: limit as number,
+        skip,
+        where: {
+          ...where,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          name: true,
+          amount: true,
+          createdAt: true,
+          category: {
+            select: {
+              name: true,
+              id: true,
+              isDelete: true,
+            },
+          },
+          budget: {
+            select: {
+              id: true,
+              name: true,
+              isDelete: true,
+            },
           },
         },
-        budget: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
+      }),
+      prisma.expense.count({
+        where,
+      }),
+    ]);
 
-    const isLastPage = expenseList?.length < Number(limit);
+    const isLastPage =
+      (Number(page) - 1) * Number(limit) + expense.length >= totalCount;
+
+    const expenseList = expense.map((expense) => ({
+      ...expense,
+      category: expense.category?.isDelete
+        ? null
+        : {
+            id: expense.category?.id,
+            name: expense.category?.name,
+          },
+      budget: expense.budget?.isDelete
+        ? null
+        : {
+            id: expense.budget?.id,
+            name: expense.budget?.name,
+          },
+    }));
 
     res.status(200).json({ expenseList, isLastPage });
   } catch (error) {
     next(error);
   }
 };
-
+// get distinct dates
 const getDistinctDate = async (
   req: Request,
   res: Response,

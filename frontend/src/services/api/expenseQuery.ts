@@ -60,14 +60,6 @@ const getDashboard = (userId: number): UseQueryResult<iResultDb, unknown> => {
 
 interface iResultExpense {
   expenseList: Array<iExpense>;
-  budgetOptions: Array<{
-    id: number;
-    name: string;
-  }>;
-  categoryOptions: Array<{
-    id: number;
-    name: string;
-  }>;
   isLastPage: boolean;
 }
 const getAllExpenes = (
@@ -147,23 +139,6 @@ const deleteExpense = (
     },
   });
 };
-// find expense
-const findExpense = (userId: number, searchKey: string, isSearch: boolean) => {
-  const queryClient = useQueryClient();
-
-  return useQuery(
-    ["expenses"],
-    async () => {
-      const res = await axiosPublic.get(
-        `/expense/${userId}?searchKey=${searchKey}`
-      );
-      return res.data;
-    },
-    {
-      enabled: isSearch,
-    }
-  );
-};
 
 export default {
   getMonthlyExpenseTrend,
@@ -172,6 +147,5 @@ export default {
   getAllExpenes,
   updateExpense,
   deleteExpense,
-  findExpense,
   getDates,
 };

@@ -7,6 +7,8 @@ export default (
   res: Response,
   next: NextFunction
 ) => {
+  console.error("An error occurred:", err);
+
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     res.status(500).json({ error: "Prisma error occurred" });
     if (err.code === "P2025") {
