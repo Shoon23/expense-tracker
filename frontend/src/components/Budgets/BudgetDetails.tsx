@@ -5,7 +5,7 @@ interface Props {
     id: number;
     name: string;
     amount: string;
-    description: string | null;
+    description: string | undefined;
     createdAt: string;
   };
 }

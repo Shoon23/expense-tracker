@@ -259,7 +259,9 @@ const updateExpense = async (
   next: NextFunction
 ) => {
   try {
-    const value = await expenseUpdateSchema.validateAsync(req.body);
+    const value = await expenseUpdateSchema.validateAsync(req.body, {
+      abortEarly: false,
+    });
 
     const { expenseId, ...other } = value;
 

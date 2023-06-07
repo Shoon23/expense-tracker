@@ -8,7 +8,7 @@ interface Props {
     id: number;
     name: string;
     amount: string;
-    description: string | null;
+    description: string | undefined;
     createdAt: string;
   };
 }
@@ -82,7 +82,11 @@ const ViewMoreModal: React.FC<Props> = ({ budget }) => {
                 </button>
               </div>
               {isShowForm ? (
-                <UpdateForm setIsShowForm={setIsShowForm} />
+                <UpdateForm
+                  setIsShowForm={setIsShowForm}
+                  budget={budget}
+                  setShowModal={setShowModal}
+                />
               ) : isShowExpenseList ? (
                 <ExpenseList budgetId={budget?.id} />
               ) : (

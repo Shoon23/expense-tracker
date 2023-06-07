@@ -42,8 +42,6 @@ model Budget {
   name        String    @db.VarChar(255)
   amount      String    @db.VarChar(255)
   description String?   @db.LongText
-  startAt     DateTime
-  endAt       DateTime
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   isDelete    Boolean   @default(false)

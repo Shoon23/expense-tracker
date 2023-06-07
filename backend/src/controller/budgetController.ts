@@ -104,14 +104,13 @@ const createBudget = async (
   }
 };
 
-// req body schema for creating budget
+// req body schema for updating budget
 const budgetUpdateSchema = Joi.object({
   budgetId: Joi.number().required(),
   name: Joi.string().optional(),
   amount: Joi.string().optional(),
-  startAt: Joi.date().optional(),
-  endAt: Joi.date().optional(),
-}).or("name", "amount", "startAt", "endAt");
+  description: Joi.string().optional(),
+}).or("name", "amount", "description");
 
 const updateBudget = async (
   req: Request,
@@ -122,7 +121,23 @@ const updateBudget = async (
     const value = await budgetUpdateSchema.validateAsync(req.body, {
       abortEarly: false,
     });
-    res.json(value);
+
+    const { budgetId, ...other } = value;
+    const updateBudget = await prisma.budget.update({
+      where: {
+        id: budgetId,
+      },
+      data: other,
+      select: {
+        id: true,
+        name: true,
+        amount: true,
+        description: true,
+        createdAt: true,
+      },
+    });
+
+    res.status(200).json(updateBudget);
   } catch (error) {
     next(error);
   }

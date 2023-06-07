@@ -7,7 +7,7 @@ interface iResultsBudgets {
     id: number;
     name: string;
     amount: string;
-    description: string | null;
+    description: string | undefined;
     createdAt: string;
   }[];
   isLastPage: boolean;
@@ -64,6 +64,30 @@ const getBudgetOptions = (userId: number) => {
     return res.data;
   });
 };
+
+// update budget
+
+const updateBudget = (
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (budget: {
+      budgetId: number;
+      amount?: string;
+      name?: string;
+      description?: string | undefined;
+    }) => {
+      const res = await axiosPublic.put(`/budget`, budget);
+      return res.data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries(["budgets"]);
+      setShowModal(false);
+    },
+  });
+};
 // delete expense
 const deleteBudget = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -88,4 +112,5 @@ export default {
   getBudgets,
   getBudgetOptions,
   deleteBudget,
+  updateBudget,
 };
