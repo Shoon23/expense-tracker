@@ -111,7 +111,7 @@ const updateBudget = (
     },
   });
 };
-// delete expense
+// delete budget
 const deleteBudget = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -119,7 +119,6 @@ const deleteBudget = (
 
   return useMutation({
     mutationFn: async (budgetId: number) => {
-      console.log(budgetId);
       const res = await axiosPublic.delete(`/budget/${budgetId}`);
       return res.data;
     },
@@ -130,8 +129,27 @@ const deleteBudget = (
   });
 };
 
+// delete budget expense
+const deleteBudgetExpense = (
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (expenseId: number) => {
+      const res = await axiosPublic.delete(`budget/${expenseId}/expense`);
+      return res.data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries(["budgetExpenses"]);
+      setShowModal(false);
+    },
+  });
+};
+
 export default {
   getDates,
+  deleteBudgetExpense,
   getBudgetExpenses,
   getBudgets,
   getBudgetOptions,

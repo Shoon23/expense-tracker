@@ -278,7 +278,20 @@ const deleteBudgetExpense = async (
   res: Response,
   next: NextFunction
 ) => {
+  const expenseId = req?.params?.expenseId;
   try {
+    if (!expenseId || isNaN(Number(expenseId))) {
+      throw new CustomError("Invalid or Missing Expense Id", 401);
+    }
+    await prisma.expense.update({
+      where: {
+        id: Number(expenseId),
+      },
+      data: {
+        budgetId: null,
+      },
+    });
+    res.status(204).json({});
   } catch (error) {
     next(error);
   }

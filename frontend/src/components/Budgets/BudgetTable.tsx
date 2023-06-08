@@ -29,14 +29,14 @@ const BudgetTable = () => {
       refetch();
     }
   };
-
+  const searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(e.target.value);
+  };
   const handleDateFilterSelect = (option: any) => {
     setPage(1);
     setDateFilter(option);
   };
-  const searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKey(e.target.value);
-  };
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex items-center p-4 gap-3">
@@ -148,7 +148,12 @@ const BudgetTable = () => {
           </span>{" "}
         </span>
         <ul className="inline-flex items-center -space-x-px">
-          <li>
+          <li
+            onClick={() => {
+              if (page === 1) return;
+              setPage(page - 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -178,7 +183,12 @@ const BudgetTable = () => {
             </a>
           </li>
 
-          <li>
+          <li
+            onClick={() => {
+              if (data?.isLastPage) return;
+              setPage(page + 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"

@@ -22,7 +22,7 @@ export default function buildWhereClause(options: any) {
   } else if (expenseId) {
     where.expenseId = Number(expenseId);
   } else if (budgetId) {
-    where.expenseId = Number(budgetId);
+    where.budgetId = Number(budgetId);
   } else if (categoryId) {
     where.categoryId = Number(categoryId);
   }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PopUpDeleteModal } from "../common";
 import budgetQuery from "../../services/api/budgetQuery";
+import { UseMutationResult } from "@tanstack/react-query";
 
 interface Props {
   budgetId: number;
@@ -9,9 +10,20 @@ interface Props {
 const ExpenseList: React.FC<Props> = ({ budgetId }) => {
   const [page, setPage] = useState(1);
   const [searchKey, setSearchKey] = useState<string | undefined>();
-  const { data, isLoading } = budgetQuery.getBudgetExpenses(budgetId, page);
+  const { data, isLoading, refetch } = budgetQuery.getBudgetExpenses(
+    budgetId,
+    page
+  );
 
-  console.log(data);
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setPage(1);
+      refetch();
+    }
+  };
+  const searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(e.target.value);
+  };
   return (
     <div className="relative overflow-x-auto overflow-y-auto p-4 max-h-[480px]">
       <div className="flex items-center justify-between pb-4">
@@ -32,6 +44,9 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
             </svg>
           </div>
           <input
+            onKeyDown={handleSearch}
+            onChange={searchOnChange}
+            value={searchKey}
             type="text"
             id="table-search"
             className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -80,7 +95,13 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
                   {expense?.category?.name || "N/A"}
                 </td>
                 <td className="px-6 py-4">{expense?.createdAt}</td>
-                <td className="px-6 py-2 flex">{/* <PopUpDeleteModal /> */}</td>
+                <td className="px-6 py-2 flex">
+                  <PopUpDeleteModal
+                    id={expense.id}
+                    prompt={"Are you sure you want to delete this expense?"}
+                    deleteQuery={budgetQuery.deleteBudgetExpense}
+                  />
+                </td>
               </tr>
             ))
           ) : (
@@ -99,7 +120,12 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
           </span>{" "}
         </span>
         <ul className="inline-flex items-center -space-x-px">
-          <li>
+          <li
+            onClick={() => {
+              if (page === 1) return;
+              setPage(page - 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -129,7 +155,12 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
             </a>
           </li>
 
-          <li>
+          <li
+            onClick={() => {
+              if (data?.isLastPage) return;
+              setPage(page + 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
