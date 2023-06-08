@@ -7,6 +7,7 @@ interface Props {
     amount: string;
     description: string | undefined;
     createdAt: string;
+    expenses: number;
   };
 }
 
@@ -16,6 +17,10 @@ const BudgetDetails: React.FC<Props> = ({ budget }) => {
       <h3 className="text-lg font-semibold text-gray-900">
         Amount:
         <span className="ml-2 text-gray-500">{budget.amount}</span>
+      </h3>
+      <h3 className="text-lg font-semibold text-gray-900">
+        Total Expenses:
+        <span className="ml-2 text-gray-500">{budget?.expenses}</span>
       </h3>
       <h3 className="text-lg font-semibold text-gray-900 ">
         Date:

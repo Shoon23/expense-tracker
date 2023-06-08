@@ -9,6 +9,7 @@ interface iResultsBudgets {
     amount: string;
     description: string | undefined;
     createdAt: string;
+    expenses: number;
   }[];
   isLastPage: boolean;
 }

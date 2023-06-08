@@ -2,20 +2,61 @@ import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
+import buildWhereClause from "../utils/buildWhereClause";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
 
+  // pagination
+  const page = req?.query?.page;
+  const limit = req?.query?.limit || 10;
+  const skip = (Number(page) - 1) * Number(limit);
+
+  // filter
+  const searchKey = req?.query?.searchKey;
   try {
     if (!userId || isNaN(Number(userId))) {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
-    const categoryList = await prisma.category.findMany({
-      where: {
-        AND: [{ userId: Number(userId) }, { isDelete: false }],
-      },
-    });
-    res.status(200).json(categoryList);
+
+    const where = buildWhereClause({ userId, searchKey, isAmount: false });
+
+    const [category, totalCount] = await prisma.$transaction([
+      prisma.category.findMany({
+        skip,
+        take: Number(limit),
+        where,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          createdAt: true,
+          expenses: {
+            select: {
+              isDelete: true,
+            },
+          },
+        },
+      }),
+      prisma?.category?.count({
+        where,
+      }),
+    ]);
+
+    const categoryList = category?.map((category) => ({
+      ...category,
+      expenses: category?.expenses?.reduce(
+        (total, expense: { isDelete: boolean }) => {
+          return expense?.isDelete ? total : total + 1;
+        },
+        0
+      ),
+    }));
+
+    const isLastPage =
+      (Number(page) - 1) * Number(limit) + categoryList.length >= totalCount;
+
+    res.status(200).json({ categoryList, isLastPage });
   } catch (error) {
     next(error);
   }
@@ -44,6 +85,73 @@ const getAsOptions = async (
       },
     });
     res.status(200).json(categoryOptions);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get category expenses
+const getAllExpense = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const categoryId = req.params.categoryId;
+
+  // pagination
+  const page = req?.query?.page;
+  const limit = req?.query?.limit || 10;
+  const skip = (Number(page) - 1) * Number(limit);
+
+  //filter
+  const searchKey = req?.query?.searchKey;
+
+  console.log(searchKey);
+
+  try {
+    if (!page || isNaN(Number(page))) {
+      throw new CustomError("Invalid or Missing Page Number", 401);
+    }
+    if (!categoryId || isNaN(Number(categoryId))) {
+      throw new CustomError("Invalid or Missing budgetId", 401);
+    }
+    const where = buildWhereClause({ categoryId, searchKey, isAmount: true });
+    const [expense, totalCount] = await prisma.$transaction([
+      prisma.expense.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          amount: true,
+          createdAt: true,
+          budget: {
+            select: {
+              id: true,
+              name: true,
+              isDelete: true,
+            },
+          },
+        },
+        take: Number(limit),
+        skip,
+      }),
+      prisma.expense.count({
+        where,
+      }),
+    ]);
+    const isLastPage =
+      (Number(page) - 1) * Number(limit) + expense.length >= totalCount;
+
+    const expenseList = expense.map((expense) => ({
+      ...expense,
+      category: expense.budget?.isDelete
+        ? null
+        : {
+            id: expense.budget?.id,
+            name: expense.budget?.name,
+          },
+    }));
+    res.status(200).json({ expenseList, isLastPage });
   } catch (error) {
     next(error);
   }
@@ -81,8 +189,9 @@ const createCategory = async (
 
 const categoryUpdateSchema = Joi.object({
   categoryId: Joi.number().required(),
-  name: Joi.string().required(),
-});
+  name: Joi.string().optional().allow(null),
+  description: Joi.string().optional().allow(null),
+}).or("name", "description");
 
 const updateCategory = async (
   req: Request,
@@ -93,14 +202,12 @@ const updateCategory = async (
     const value = await categoryUpdateSchema.validateAsync(req.body, {
       abortEarly: false,
     });
-    const { name, categoryId } = value;
+    const { categoryId, ...other } = value;
     const updateCategory = await prisma.category.update({
       where: {
         id: categoryId,
       },
-      data: {
-        name,
-      },
+      data: other,
     });
     res.status(200).json(updateCategory);
   } catch (error) {
@@ -133,10 +240,37 @@ const deleteCategory = async (
   }
 };
 
+// delete category expense
+const deleteCategoryExpense = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const expenseId = req?.params?.expenseId;
+  try {
+    if (!expenseId || isNaN(Number(expenseId))) {
+      throw new CustomError("Invalid or Missing Expense Id", 401);
+    }
+    await prisma.expense.update({
+      where: {
+        id: Number(expenseId),
+      },
+      data: {
+        categoryId: null,
+      },
+    });
+    res.status(204).json({});
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
+  getAllExpense,
   getAll,
   createCategory,
   updateCategory,
   deleteCategory,
   getAsOptions,
+  deleteCategoryExpense,
 };

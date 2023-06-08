@@ -8,6 +8,8 @@ budgetRoutes.get("/:userId", budgetController.getAll);
 budgetRoutes.get("/:userId/options", budgetController.getAsOptions);
 // get distinct date for budgets
 budgetRoutes.get("/:userId/dates", budgetController.getDistinctDate);
+// get budget expenses
+budgetRoutes.get("/:budgetId/expense", budgetController.getAllExpense);
 // create budget
 budgetRoutes.post("/", budgetController.createBudget);
 // update budget
@@ -19,7 +21,5 @@ budgetRoutes.delete(
   "/:expenseId/expense",
   budgetController.deleteBudgetExpense
 );
-// get budget expenses
-budgetRoutes.get("/:budgetId/expense", budgetController.getAllExpense);
 
 export default budgetRoutes;

@@ -1,21 +1,33 @@
 import React from "react";
 
-const CategoryDetails = () => {
+interface Props {
+  category: {
+    id: number;
+    name: string;
+    description: string | null;
+    createdAt: string;
+    expenses: number;
+  };
+}
+
+const CategoryDetails: React.FC<Props> = ({ category }) => {
   return (
     <div className="p-6">
       <h3 className="text-lg font-semibold text-gray-900">
-        Budget:
-        <span className="ml-2 text-gray-500">3000</span>
+        Name:
+        <span className="ml-2 text-gray-500">{category?.name}</span>
+      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 ">
+        Total Expenses:
+        <span className="ml-2 text-gray-500">{category?.expenses}</span>
       </h3>
       <h3 className="text-lg font-semibold text-gray-900 ">
         Date:
-        <span className="ml-2 text-gray-500">12-02-1292</span>
+        <span className="ml-2 text-gray-500">{category?.createdAt}</span>
       </h3>
       <h3 className="text-gray-900 text-lg font-semibold ">Description:</h3>
-      <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-        With less than a month to go before the European Union enacts new
-        consumer privacy laws for its citizens, companies around the world are
-        updating their terms of service agreements to comply.
+      <p className="text-base leading-relaxed break-words">
+        {category?.description || "None"}
       </p>
     </div>
   );

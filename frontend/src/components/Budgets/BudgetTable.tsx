@@ -5,6 +5,7 @@ import budgetQuery from "../../services/api/budgetQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { DropDown } from "../common";
 import { iUser } from "../../types/user";
+import stringUtils from "../../utils/stringUtils";
 const BudgetTable = () => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<iUser>(["user"]);
@@ -89,6 +90,9 @@ const BudgetTable = () => {
               Amount
             </th>
             <th scope="col" className="px-6 py-3">
+              # of Expense
+            </th>
+            <th scope="col" className="px-6 py-3">
               Date
             </th>
             <th scope="col" className="px-6 py-3">
@@ -113,13 +117,11 @@ const BudgetTable = () => {
                     {budget.name}
                   </th>
                   <td className="px-6 py-2">
-                    {budget?.description
-                      ? budget?.description?.length > 15
-                        ? budget?.description?.substring(0, 15) + "..."
-                        : budget?.description
-                      : "None"}
+                    {stringUtils?.sliceString(budget?.description)}
                   </td>
                   <td className="px-6 py-2">{budget?.amount}</td>
+                  <td className="px-6 py-2 text-center">{budget?.expenses}</td>
+
                   <td className="px-6 py-2">{budget?.createdAt}</td>
                   <td className="px-6 py-2 flex">
                     <ViewMoreModal budget={budget} />

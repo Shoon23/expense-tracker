@@ -1,12 +1,69 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import budgetQuery from "../../services/api/budgetQuery";
+import categoryQuery from "../../services/api/categoryQuery";
 
 interface Props {
   setIsShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  category: {
+    id: number;
+    name: string;
+    description: string | null;
+    createdAt: string;
+    expenses: number;
+  };
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UpdateForm: React.FC<Props> = ({ setIsShowForm }) => {
+const UpdateForm: React.FC<Props> = ({
+  setIsShowForm,
+  category,
+  setShowModal,
+}) => {
+  const initialCategoryData = { categoryId: 0, name: "", description: "" };
+  const { mutateAsync } = categoryQuery.updateCategory(setShowModal);
+  useEffect(() => {
+    setCategoryData({
+      categoryId: category?.id,
+      name: category?.name,
+      description: category?.description || null,
+    });
+
+    return () => {
+      setCategoryData(initialCategoryData);
+    };
+  }, []);
+
+  const [categoryData, setCategoryData] = useState<{
+    categoryId: number;
+    name?: string;
+    description?: string | null;
+  }>(initialCategoryData);
+
+  const handleOnChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setCategoryData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const updateData = categoryData;
+
+    if (updateData?.description === category?.description) {
+      delete updateData?.description;
+    }
+    if (updateData?.name === category?.name) {
+      delete updateData?.name;
+    }
+
+    mutateAsync(updateData);
+  };
+
   return (
-    <form action="#" className="p-6">
+    <form onSubmit={handleSubmit} className="p-6">
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
         <div className="sm:col-span-2">
           <label
@@ -16,6 +73,8 @@ const UpdateForm: React.FC<Props> = ({ setIsShowForm }) => {
             Category Name
           </label>
           <input
+            onChange={handleOnChange}
+            value={categoryData?.name}
             type="text"
             name="name"
             id="name"
@@ -27,43 +86,29 @@ const UpdateForm: React.FC<Props> = ({ setIsShowForm }) => {
 
         <div className="sm:col-span-2">
           <label
-            htmlFor="price"
-            className="block mb-2 text-sm font-medium text-gray-900 "
-          >
-            Budget
-          </label>
-          <input
-            type="number"
-            name="price"
-            id="price"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            placeholder="$2999"
-            required
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label
             htmlFor="description"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Description
           </label>
           <textarea
+            onChange={handleOnChange}
             id="description"
+            name="description"
+            value={categoryData?.description || ""}
             rows={8}
             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             placeholder="Write a product description here..."
-          >
-            Standard glass, 3.8GHz 8-core 10th-generation Intel Core i7
-            processor, Turbo Boost up to 5.0GHz, 16GB 2666MHz DDR4 memory,
-            Radeon Pro 5500 XT with 8GB of GDDR6 memory, 256GB SSD storage,
-            Gigabit Ethernet, Magic Mouse 2, Magic Keyboard - US
-          </textarea>
+          ></textarea>
         </div>
       </div>
       <div className="flex mt-4">
         <button
-          type="button"
+          disabled={
+            category?.description === categoryData?.description &&
+            category?.name === categoryData?.name
+          }
+          type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         >
           Submit Update

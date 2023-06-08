@@ -1,11 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { PopUpDeleteModal } from "../common";
-import { ViewMoreModal } from ".";
-
+import { ViewMoreModal, AddModal } from ".";
+import categoryQuery from "../../services/api/categoryQuery";
+import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import { iUser } from "../../types/user";
+import stringUtils from "../../utils/stringUtils";
 const CategoriesTable = () => {
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+  const [page, setPage] = useState(1);
+  const [searchKey, setSearchKey] = useState<string | undefined>();
+  const { data, isLoading, refetch } = categoryQuery?.getAll(
+    user?.id as number,
+    page,
+    searchKey
+  );
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      console.log(searchKey);
+      setPage(1);
+      refetch();
+    }
+  };
+  const searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(e.target.value);
+  };
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div className="flex items-center p-4 gap-3">
+      <div className="flex items-center p-4 gap-3 justify-between">
         <label htmlFor="table-search" className="sr-only">
           Search
         </label>
@@ -26,221 +50,17 @@ const CategoriesTable = () => {
             </svg>
           </div>
           <input
+            onKeyDown={handleSearch}
+            onChange={searchOnChange}
+            value={searchKey}
             type="text"
             id="table-search"
             className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Search htmlFor items"
           />
         </div>
-        <div>
-          <button
-            id="dropdownRadioButton"
-            data-dropdown-toggle="dropdownRadio"
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
-          >
-            <svg
-              className="w-4 h-4 mr-2 text-gray-400"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-            Last 30 days
-            <svg
-              className="w-3 h-3 ml-2"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
-
-          <div
-            id="dropdownRadio"
-            className="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-            data-popper-reference-hidden=""
-            data-popper-escaped=""
-            data-popper-placement="top"
-          >
-            <ul
-              className="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownRadioButton"
-            >
-              <li>
-                <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                  <input
-                    id="filter-radio-example-1"
-                    type="radio"
-                    value=""
-                    name="filter-radio"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    htmlFor="filter-radio-example-1"
-                    className="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    Last day
-                  </label>
-                </div>
-              </li>
-              <li>
-                <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                  <input
-                    checked={true}
-                    id="filter-radio-example-2"
-                    type="radio"
-                    value=""
-                    name="filter-radio"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:borde-gray-600"
-                  />
-                  <label
-                    htmlFor="filter-radio-example-2"
-                    className="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    Last 7 days
-                  </label>
-                </div>
-              </li>
-              <li>
-                <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                  <input
-                    id="filter-radio-example-3"
-                    type="radio"
-                    value=""
-                    name="filter-radio"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    htmlFor="filter-radio-example-3"
-                    className="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    Last 30 days
-                  </label>
-                </div>
-              </li>
-              <li>
-                <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                  <input
-                    id="filter-radio-example-4"
-                    type="radio"
-                    value=""
-                    name="filter-radio"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    htmlFor="filter-radio-example-4"
-                    className="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    Last month
-                  </label>
-                </div>
-              </li>
-              <li>
-                <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                  <input
-                    id="filter-radio-example-5"
-                    type="radio"
-                    value=""
-                    name="filter-radio"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    htmlFor="filter-radio-example-5"
-                    className="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    Last year
-                  </label>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <button
-            id="dropdownRadioButton"
-            data-dropdown-toggle="dropdownRadio"
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
-          >
-            <svg
-              className="w-4 h-4 mr-2 text-gray-400"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-            Last 30 days
-            <svg
-              className="w-3 h-3 ml-2"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
-          <button
-            id="dropdownRadioButton"
-            data-dropdown-toggle="dropdownRadio"
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
-          >
-            <svg
-              className="w-4 h-4 mr-2 text-gray-400"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-            Last 30 days
-            <svg
-              className="w-3 h-3 ml-2"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
+        <div className="">
+          <AddModal />
         </div>
       </div>
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -253,7 +73,7 @@ const CategoriesTable = () => {
               Description
             </th>
             <th scope="col" className="px-6 py-3">
-              Budget
+              # of Expense
             </th>
             <th scope="col" className="px-6 py-3">
               Date
@@ -264,28 +84,38 @@ const CategoriesTable = () => {
           </tr>
         </thead>
         <tbody>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((id: number) => {
-            return (
+          {isLoading ? (
+            <div>loadingg</div>
+          ) : data && data?.categoryList?.length > 0 ? (
+            data?.categoryList?.map((category) => (
               <tr
-                key={id}
+                key={category?.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
                 <th
                   scope="row"
                   className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  Apple MacBook Pro 17"
+                  {category?.name}
                 </th>
-                <td className="px-6 py-2">Silver</td>
-                <td className="px-6 py-2">Laptop</td>
-                <td className="px-6 py-2">$2999</td>
+                <td className="px-6 py-2">
+                  {stringUtils?.sliceString(category?.description)}
+                </td>
+                <td className="px-6 py-2">{category?.expenses}</td>
+                <td className="px-6 py-2">{category?.createdAt}</td>
                 <td className="px-6 py-2 flex">
-                  <ViewMoreModal />
-                  <PopUpDeleteModal />
+                  <ViewMoreModal category={category} />
+                  <PopUpDeleteModal
+                    id={category?.id}
+                    prompt="Are you sure you want to delete this category?"
+                    deleteQuery={categoryQuery?.deleteCategory}
+                  />
                 </td>
               </tr>
-            );
-          })}
+            ))
+          ) : (
+            <div>empty</div>
+          )}
         </tbody>
       </table>
       <nav
@@ -293,17 +123,18 @@ const CategoriesTable = () => {
         aria-label="Table navigation"
       >
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-          Showing{" "}
+          Showing
           <span className="font-semibold text-gray-900 dark:text-white">
             1-10
-          </span>{" "}
-          of{" "}
-          <span className="font-semibold text-gray-900 dark:text-white">
-            1000
           </span>
         </span>
         <ul className="inline-flex items-center -space-x-px">
-          <li>
+          <li
+            onClick={() => {
+              if (page === 1) return;
+              setPage(page - 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -332,40 +163,13 @@ const CategoriesTable = () => {
               1
             </a>
           </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              2
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              aria-current="page"
-              className="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-            >
-              3
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              ...
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              100
-            </a>
-          </li>
-          <li>
+
+          <li
+            onClick={() => {
+              if (data?.isLastPage) return;
+              setPage(page + 1);
+            }}
+          >
             <a
               href="#"
               className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"

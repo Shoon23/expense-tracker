@@ -32,6 +32,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
       categoryFilter,
       budgetFilter,
       dateFilter,
+      isAmount: true,
     });
     const [expense, totalCount] = await prisma.$transaction([
       prisma.expense.findMany({

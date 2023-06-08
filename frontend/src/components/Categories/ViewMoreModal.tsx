@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { CategoryDetails, ExpenseList, UpdateForm } from ".";
 
-const ViewMoreModal = () => {
+interface Props {
+  category: {
+    id: number;
+    name: string;
+    description: string | null;
+    createdAt: string;
+    expenses: number;
+  };
+}
+const ViewMoreModal: React.FC<Props> = ({ category }) => {
   const [showModal, setShowModal] = useState(false);
   const [isShowForm, setIsShowForm] = useState(false);
   const [isShowExpenseList, setisShowExpenseList] = useState(false);
@@ -45,7 +54,8 @@ const ViewMoreModal = () => {
               <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                 <div className="flex flex-col">
                   <h3 className="text-xl font-semibold  ">
-                    Category: <span className="text-gray-900">Food</span>
+                    Category:{" "}
+                    <span className="text-gray-900">{category?.name}</span>
                   </h3>
                 </div>
                 <button
@@ -70,11 +80,15 @@ const ViewMoreModal = () => {
                 </button>
               </div>
               {isShowForm ? (
-                <UpdateForm setIsShowForm={setIsShowForm} />
+                <UpdateForm
+                  setIsShowForm={setIsShowForm}
+                  category={category}
+                  setShowModal={setShowModal}
+                />
               ) : isShowExpenseList ? (
-                <ExpenseList />
+                <ExpenseList categoryId={category?.id} />
               ) : (
-                <CategoryDetails />
+                <CategoryDetails category={category} />
               )}
               {!isShowForm && !isShowExpenseList ? (
                 <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">

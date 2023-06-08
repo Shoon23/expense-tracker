@@ -22,15 +22,13 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
 
-    console.log(searchKey);
-    console.log(dateFilter);
-
     const where = buildWhereClause({
       userId,
       searchKey,
       dateFilter,
+      isAmount: true,
     });
-    const [budgetList, totalCount] = await prisma.$transaction([
+    const [budgets, totalCount] = await prisma.$transaction([
       prisma.budget.findMany({
         skip,
         take: Number(limit),
@@ -41,15 +39,29 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
           amount: true,
           description: true,
           createdAt: true,
+          expenses: {
+            select: {
+              isDelete: true,
+            },
+          },
         },
       }),
       prisma.budget.count({
         where,
       }),
     ]);
-
+    const budgetList = budgets.map((budget) => ({
+      ...budget,
+      expenses: budget?.expenses?.reduce(
+        (total: number, expense: { isDelete: boolean }) => {
+          return expense?.isDelete ? total : total + 1;
+        },
+        0
+      ),
+    }));
     const isLastPage =
       (Number(page) - 1) * Number(limit) + budgetList.length >= totalCount;
+
     res.status(200).json({ budgetList, isLastPage });
   } catch (error) {
     next(error);
@@ -230,7 +242,7 @@ const getAllExpense = async (
     if (!budgetId || isNaN(Number(budgetId))) {
       throw new CustomError("Invalid or Missing budgetId", 401);
     }
-    const where = buildWhereClause({ budgetId, searchKey });
+    const where = buildWhereClause({ budgetId, searchKey, isAmount: true });
     const [expense, totalCount] = await prisma.$transaction([
       prisma.expense.findMany({
         where,

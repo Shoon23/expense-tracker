@@ -9,6 +9,7 @@ export default function buildWhereClause(options: any) {
     categoryFilter,
     budgetFilter,
     dateFilter,
+    isAmount,
   } = options;
 
   const where: any = {
@@ -30,7 +31,9 @@ export default function buildWhereClause(options: any) {
   if (searchKey) {
     where.OR = [
       { name: { contains: searchKey } },
-      { amount: { contains: searchKey } },
+      isAmount
+        ? { amount: { contains: searchKey } }
+        : { description: { contains: searchKey } },
     ];
   }
 

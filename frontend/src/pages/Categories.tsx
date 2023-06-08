@@ -1,4 +1,4 @@
-import { CategoriesTable, AddModal } from "../components/Categories";
+import { CategoriesTable } from "../components/Categories";
 
 const Categories = () => {
   return (
@@ -6,7 +6,6 @@ const Categories = () => {
       <h1 className="text-4xl mb-3">Category</h1>
 
       <CategoriesTable />
-      <AddModal />
     </div>
   );
 };
