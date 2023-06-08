@@ -12,11 +12,18 @@ interface iResultsBudgets {
   }[];
   isLastPage: boolean;
 }
-const getBudgets = (userId: number, page: number) => {
+const getBudgets = (
+  userId: number,
+  page: number,
+  searchKey?: string,
+  dateFilter?: number
+) => {
   return useQuery<iResultsBudgets, unknown>(["budgets", page], async () => {
     const res = await axiosPublic.get(`/budget/${userId}`, {
       params: {
         page,
+        searchKey,
+        dateFilter,
       },
     });
     return res.data;
@@ -51,6 +58,22 @@ const getBudgetExpenses = (budgetId: number, page: number) => {
     }
   );
 };
+
+// get date as a option
+
+const getDates = (userId: number) => {
+  return useQuery<
+    Array<{
+      id: number;
+      createdAt: string;
+    }>,
+    unknown
+  >(["dateBudgetsOptions"], async () => {
+    const res = await axiosPublic.get(`/budget/${userId}/dates`);
+    return res.data;
+  });
+};
+
 // get budgets as an option
 const getBudgetOptions = (userId: number) => {
   return useQuery<
@@ -108,6 +131,7 @@ const deleteBudget = (
 };
 
 export default {
+  getDates,
   getBudgetExpenses,
   getBudgets,
   getBudgetOptions,

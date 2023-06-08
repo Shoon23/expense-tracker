@@ -1,3 +1,3 @@
 import PopUpDeleteModal from "./PopUpDeleteModal";
-
-export { PopUpDeleteModal };
+import DropDown from "./DropDown";
+export { PopUpDeleteModal, DropDown };

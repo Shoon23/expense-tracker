@@ -8,6 +8,7 @@ interface Props {
 
 const ExpenseList: React.FC<Props> = ({ budgetId }) => {
   const [page, setPage] = useState(1);
+  const [searchKey, setSearchKey] = useState<string | undefined>();
   const { data, isLoading } = budgetQuery.getBudgetExpenses(budgetId, page);
 
   console.log(data);
@@ -37,40 +38,6 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
             placeholder="Search for items"
           />
         </div>
-        <button
-          className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-          type="button"
-        >
-          <svg
-            className="w-4 h-4 mr-2 text-gray-400"
-            aria-hidden="true"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
-          Last 30 days
-          <svg
-            className="w-3 h-3 ml-2"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
-          </svg>
-        </button>
       </div>
 
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -97,17 +64,25 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
           {isLoading ? (
             <div>Loading....</div>
           ) : data?.expenseList && data?.expenseList?.length > 0 ? (
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+            data?.expenseList.map((expense) => (
+              <tr
+                key={expense.id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
-                Apple MacBook Pro 17"
-              </th>
-              <td className="px-6 py-4">Silver</td>
-              <td className="px-6 py-4">Laptop</td>
-              <td className="px-6 py-2 flex">{/* <PopUpDeleteModal /> */}</td>
-            </tr>
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  {expense?.name}
+                </th>
+                <td className="px-6 py-4">{expense?.amount}</td>
+                <td className="px-6 py-4">
+                  {expense?.category?.name || "N/A"}
+                </td>
+                <td className="px-6 py-4">{expense?.createdAt}</td>
+                <td className="px-6 py-2 flex">{/* <PopUpDeleteModal /> */}</td>
+              </tr>
+            ))
           ) : (
             <div>empty</div>
           )}
@@ -122,10 +97,6 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
           <span className="font-semibold text-gray-900 dark:text-white">
             1-10
           </span>{" "}
-          of{" "}
-          <span className="font-semibold text-gray-900 dark:text-white">
-            1000
-          </span>
         </span>
         <ul className="inline-flex items-center -space-x-px">
           <li>

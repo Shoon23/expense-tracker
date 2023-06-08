@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import prisma from "../lib/prisma";
 import Joi, { date, number } from "joi";
+import buildWhereClause from "../utils/buildWhereClause";
 // get all expense
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
@@ -25,29 +26,13 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError("Invalid or Missing UserId", 401);
     }
 
-    const where: any = {
-      userId: Number(userId),
-      isDelete: false,
-    };
-
-    if (searchKey) {
-      where.OR = [
-        { name: { contains: searchKey } },
-        { amount: { contains: searchKey } },
-      ];
-    }
-
-    if (categoryFilter) {
-      where.categoryId = Number(categoryFilter);
-    }
-
-    if (budgetFilter) {
-      where.budgetId = Number(budgetFilter);
-    }
-
-    if (dateFilter) {
-      where.id = Number(dateFilter);
-    }
+    const where = buildWhereClause({
+      userId,
+      searchKey,
+      categoryFilter,
+      budgetFilter,
+      dateFilter,
+    });
     const [expense, totalCount] = await prisma.$transaction([
       prisma.expense.findMany({
         take: limit as number,
@@ -116,10 +101,10 @@ const getDistinctDate = async (
 ) => {
   const userId = req.params.userId;
 
-  if (!userId || isNaN(Number(userId))) {
-    throw new CustomError("Invalid or Missing UserId", 401);
-  }
   try {
+    if (!userId || isNaN(Number(userId))) {
+      throw new CustomError("Invalid or Missing UserId", 401);
+    }
     const expenseDates = await prisma.expense.findMany({
       where: {
         userId: Number(userId),

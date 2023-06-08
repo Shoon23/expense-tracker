@@ -3,8 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../../types/user";
 import expenseQuery from "../../services/api/expenseQuery";
 import UpdateBtn from "./UpdateBtn";
-import { useCallback, useEffect, useState } from "react";
-import DropDown from "./DropDown";
+import { useEffect, useState } from "react";
+import { DropDown } from "../common";
 import budgetQuery from "../../services/api/budgetQuery";
 import categoryQuery from "../../services/api/categoryQuery";
 
@@ -97,7 +97,7 @@ const ExpenseTable = () => {
             type="text"
             id="table-search"
             className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Search htmlFor items"
+            placeholder="Search Expenses"
           />
         </div>
         <DropDown
@@ -189,10 +189,6 @@ const ExpenseTable = () => {
           <span className="font-semibold text-gray-900 dark:text-white">
             1-10
           </span>{" "}
-          of{" "}
-          <span className="font-semibold text-gray-900 dark:text-white">
-            1000
-          </span>
         </span>
         <ul className="inline-flex items-center -space-x-px">
           <li
