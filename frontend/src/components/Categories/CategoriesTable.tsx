@@ -60,7 +60,7 @@ const CategoriesTable = () => {
           />
         </div>
         <div className="">
-          <AddModal />
+          <AddModal userId={user?.id as number} />
         </div>
       </div>
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

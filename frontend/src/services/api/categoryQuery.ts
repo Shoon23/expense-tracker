@@ -132,7 +132,39 @@ const deleteCategoryExpense = (
   });
 };
 
+// add category
+const createCategory = (
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>,
+  setCategoryData: React.Dispatch<
+    React.SetStateAction<{
+      name: string;
+      description?: string | null;
+    }>
+  >
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (category: {
+      userId: number;
+      name: string;
+      description?: string | null;
+    }) => {
+      const res = await axiosPublic.post(`/category`, category);
+      return res.data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries(["categories"]);
+      setCategoryData({
+        name: "",
+        description: "",
+      });
+      setShowModal(false);
+    },
+  });
+};
+
 export default {
+  createCategory,
   deleteCategory,
   updateCategory,
   getCategoryExpenses,

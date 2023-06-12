@@ -161,6 +161,7 @@ const getAllExpense = async (
 const categoryCreateSchema = Joi.object({
   userId: Joi.number().required(),
   name: Joi.string().required(),
+  description: Joi.string(),
 });
 const createCategory = async (
   req: Request,
@@ -171,12 +172,9 @@ const createCategory = async (
     const value = await categoryCreateSchema.validateAsync(req.body, {
       abortEarly: false,
     });
-    const { userId, name } = value;
+
     const create = await prisma.category.create({
-      data: {
-        userId: userId,
-        name,
-      },
+      data: value,
     });
 
     res.status(201).json(create);
