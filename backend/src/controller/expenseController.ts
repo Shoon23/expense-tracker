@@ -214,16 +214,8 @@ const createExpense = async (
       abortEarly: false,
     });
 
-    const { userId, categoryId, budgetId, name, amount } = value;
-
     const createExpense = await prisma.expense.create({
-      data: {
-        amount,
-        name,
-        userId: userId,
-        categoryId: categoryId || null,
-        budgetId: budgetId || null,
-      },
+      data: value,
     });
     res.status(201).json(createExpense);
   } catch (error) {

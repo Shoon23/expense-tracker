@@ -140,7 +140,49 @@ const deleteExpense = (
   });
 };
 
+// create expense
+
+const createExpense = (
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>,
+  setExpenseData: React.Dispatch<
+    React.SetStateAction<{
+      userId: number;
+      name: string;
+      amount: string;
+      budgetId?: number | null | undefined;
+      categoryId?: number | null | undefined;
+    }>
+  >
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (expenseData: {
+      userId: number;
+      name: string;
+      amount: string;
+      budgetId?: number | null | undefined;
+      categoryId?: number | null | undefined;
+    }) => {
+      const res = await axiosPublic.post(`expense`, expenseData);
+      return res.data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries(["expenses"]);
+      setExpenseData({
+        userId: 0,
+        name: "",
+        amount: "",
+        budgetId: null,
+        categoryId: null,
+      });
+      setShowModal(false);
+    },
+  });
+};
+
 export default {
+  createExpense,
   getMonthlyExpenseTrend,
   getCategoryDistribution,
   getDashboard,

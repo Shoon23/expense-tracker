@@ -1,3 +1,4 @@
 import ExpenseTable from "./ExpenseTable";
 import UpdateModal from "./UpdateModal";
-export { ExpenseTable, UpdateModal };
+import AddModal from "./AddModal";
+export { ExpenseTable, UpdateModal, AddModal };

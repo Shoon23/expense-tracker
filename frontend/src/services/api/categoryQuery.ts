@@ -114,7 +114,7 @@ const deleteCategory = (
   });
 };
 
-// delete categoru expense
+// delete category expense
 const deleteCategoryExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
