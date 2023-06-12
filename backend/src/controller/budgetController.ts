@@ -33,6 +33,9 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
         skip,
         take: Number(limit),
         where,
+        orderBy: {
+          createdAt: "desc",
+        },
         select: {
           id: true,
           name: true,
@@ -132,8 +135,7 @@ const budgetCreateSchema = Joi.object({
   userId: Joi.number().required(),
   name: Joi.string().required(),
   amount: Joi.string().required(),
-  startAt: Joi.date().required(),
-  endAt: Joi.date().required(),
+  description: Joi.string(),
 });
 const createBudget = async (
   req: Request,

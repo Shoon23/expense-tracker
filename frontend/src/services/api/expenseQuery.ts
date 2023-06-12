@@ -146,7 +146,6 @@ const createExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>,
   setExpenseData: React.Dispatch<
     React.SetStateAction<{
-      userId: number;
       name: string;
       amount: string;
       budgetId?: number | null | undefined;
@@ -170,7 +169,6 @@ const createExpense = (
     onSuccess() {
       queryClient.invalidateQueries(["expenses"]);
       setExpenseData({
-        userId: 0,
         name: "",
         amount: "",
         budgetId: null,

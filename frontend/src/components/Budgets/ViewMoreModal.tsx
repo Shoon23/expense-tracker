@@ -8,8 +8,9 @@ interface Props {
     id: number;
     name: string;
     amount: string;
-    description: string | undefined;
+    description: string | null;
     createdAt: string;
+    expenses: number;
   };
 }
 
