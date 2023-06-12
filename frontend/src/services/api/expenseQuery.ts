@@ -143,7 +143,6 @@ const deleteExpense = (
 // create expense
 
 const createExpense = (
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>,
   setExpenseData: React.Dispatch<
     React.SetStateAction<{
       name: string;
@@ -151,7 +150,8 @@ const createExpense = (
       budgetId?: number | null | undefined;
       categoryId?: number | null | undefined;
     }>
-  >
+  >,
+  setShowModal?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
 
@@ -174,7 +174,9 @@ const createExpense = (
         budgetId: null,
         categoryId: null,
       });
-      setShowModal(false);
+      if (setShowModal) {
+        setShowModal(false);
+      }
     },
   });
 };
