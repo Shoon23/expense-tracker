@@ -1,9 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import axios, {
   AxiosError,
-  AxiosRequestConfig,
   AxiosRequestHeaders,
-  AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
 import jwt_decode, { JwtPayload } from "jwt-decode";

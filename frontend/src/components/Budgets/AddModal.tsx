@@ -33,7 +33,9 @@ const AddModal: React.FC<Props> = ({ userId }) => {
     setBudgetData(initialBudgetData);
     setShowModal(!showModal);
   };
-  const handleOnChange = (e: React.ChangeEvent<any>) => {
+  const handleOnChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setBudgetData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,

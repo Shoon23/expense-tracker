@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import budgetQuery from "../../services/api/budgetQuery";
 import categoryQuery from "../../services/api/categoryQuery";
 import Loading from "../common/Loading";
 

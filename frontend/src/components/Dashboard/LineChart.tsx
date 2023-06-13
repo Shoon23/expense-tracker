@@ -11,7 +11,6 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { faker } from "@faker-js/faker";
 import expenseQuery from "../../services/api/expenseQuery";
 import Loading from "../common/Loading";
 ChartJS.register(

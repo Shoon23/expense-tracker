@@ -12,7 +12,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
 import expenseQuery from "../services/api/expenseQuery";
 import { useState } from "react";
-import Loading from "../components/common/Loading";
 
 const Home = () => {
   const queryClient = useQueryClient();
@@ -24,7 +23,6 @@ const Home = () => {
   const {
     data: recentData,
     isLoading,
-    error,
     isError,
   } = expenseQuery.getDashboard(user?.id as number);
 

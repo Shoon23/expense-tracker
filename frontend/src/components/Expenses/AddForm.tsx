@@ -4,7 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../../types/user";
 import budgetQuery from "../../services/api/budgetQuery";
 import categoryQuery from "../../services/api/categoryQuery";
-import { IconCircleLetterW } from "@tabler/icons-react";
 
 interface Props {
   setShowModal?: React.Dispatch<React.SetStateAction<boolean>>;

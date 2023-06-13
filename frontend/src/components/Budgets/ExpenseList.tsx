@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PopUpDeleteModal } from "../common";
 import budgetQuery from "../../services/api/budgetQuery";
-import { UseMutationResult } from "@tanstack/react-query";
 import Loading from "../common/Loading";
 
 interface Props {

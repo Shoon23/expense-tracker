@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { PopUpDeleteModal } from "../common";
 import { ViewMoreModal, AddModal } from ".";
 import categoryQuery from "../../services/api/categoryQuery";
-import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../../types/user";
 import stringUtils from "../../utils/stringUtils";
 import Loading from "../common/Loading";

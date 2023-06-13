@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import expenseQuery from "../../services/api/expenseQuery";
 import AddForm from "./AddForm";
 
 interface Props {}

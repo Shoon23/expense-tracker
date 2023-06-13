@@ -1,10 +1,8 @@
-import React from "react";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
 import authQuery from "../services/api/authQuery";
 import Loading from "../components/common/Loading";
-import Expenses from "../pages/Expenses";
 const PersistAuth = () => {
   const queryClient = useQueryClient();
 

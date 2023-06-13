@@ -1,4 +1,3 @@
-import React from "react";
 import BudgetTable from "../components/Budgets/BudgetTable";
 
 const Budgets = () => {

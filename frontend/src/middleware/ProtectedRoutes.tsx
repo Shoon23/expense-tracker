@@ -1,4 +1,3 @@
-import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
 import { Navigate, Outlet, useLocation } from "react-router-dom";

@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { axiosPublic } from "../axiosInstance";
 import usePrivateRoutes from "../../hooks/usePrivateRoutes";
 import { iUser } from "../../types/user";
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
 
 // get all budgets
 interface iResultsBudgets {
@@ -19,7 +20,7 @@ const getBudgets = (
   userId: number,
   page: number,
   searchKey?: string,
-  dateFilter?: number
+  dateFilter?: number | null
 ) => {
   const queryClient = useQueryClient();
   const api = usePrivateRoutes();

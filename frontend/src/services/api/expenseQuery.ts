@@ -1,15 +1,14 @@
 import {
-  RefetchOptions,
   UseQueryResult,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useState } from "react";
-import { axiosPublic } from "../axiosInstance";
-import { fa } from "@faker-js/faker";
+
 import usePrivateRoutes from "../../hooks/usePrivateRoutes";
 import { iUser } from "../../types/user";
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
 
 // line chart
 const getMonthlyExpenseTrend = (userId: number) => {
@@ -157,7 +156,7 @@ const updateExpense = (
       });
       return res.data;
     },
-    onSuccess(data, variables, context) {
+    onSuccess() {
       queryClient.invalidateQueries(["expenses"]);
       setShowModal(false);
     },

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { UpdateForm } from ".";
 import categoryQuery from "../../services/api/categoryQuery";
 import Loading from "../common/Loading";
 
