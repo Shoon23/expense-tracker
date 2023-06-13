@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosPublic } from "../axiosInstance";
+import usePrivateRoutes from "../../hooks/usePrivateRoutes";
+import { iUser } from "../../types/user";
 
 // get all budgets
 interface iResultsBudgets {
@@ -19,12 +21,19 @@ const getBudgets = (
   searchKey?: string,
   dateFilter?: number
 ) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<iResultsBudgets, unknown>(["budgets", page], async () => {
-    const res = await axiosPublic.get(`/budget/${userId}`, {
+    const res = await api.get(`/budget/${userId}`, {
       params: {
         page,
         searchKey,
         dateFilter,
+      },
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
       },
     });
     return res.data;
@@ -46,12 +55,19 @@ interface iResultsExpenses {
   isLastPage: boolean;
 }
 const getBudgetExpenses = (budgetId: number, page: number) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<iResultsExpenses, unknown>(
     ["budgetExpenses", page],
     async () => {
-      const res = await axiosPublic.get(`budget/${budgetId}/expense`, {
+      const res = await api.get(`budget/${budgetId}/expense`, {
         params: {
           page,
+        },
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
         },
       });
 
@@ -63,6 +79,10 @@ const getBudgetExpenses = (budgetId: number, page: number) => {
 // get date as a option
 
 const getDates = (userId: number) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<
     Array<{
       id: number;
@@ -70,13 +90,21 @@ const getDates = (userId: number) => {
     }>,
     unknown
   >(["dateBudgetsOptions"], async () => {
-    const res = await axiosPublic.get(`/budget/${userId}/dates`);
+    const res = await api.get(`/budget/${userId}/dates`, {
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
+      },
+    });
     return res.data;
   });
 };
 
 // get budgets as an option
 const getBudgetOptions = (userId: number) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<
     Array<{
       id: number;
@@ -84,7 +112,11 @@ const getBudgetOptions = (userId: number) => {
     }>,
     unknown
   >(["budgetOptions"], async () => {
-    const res = await axiosPublic.get(`/budget/${userId}/options`);
+    const res = await api.get(`/budget/${userId}/options`, {
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
+      },
+    });
     return res.data;
   });
 };
@@ -95,6 +127,8 @@ const updateBudget = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (budget: {
@@ -103,7 +137,11 @@ const updateBudget = (
       name?: string;
       description?: string | undefined;
     }) => {
-      const res = await axiosPublic.put(`/budget`, budget);
+      const res = await api.put(`/budget`, budget, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {
@@ -117,10 +155,16 @@ const deleteBudget = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (budgetId: number) => {
-      const res = await axiosPublic.delete(`/budget/${budgetId}`);
+      const res = await api.delete(`/budget/${budgetId}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {
@@ -135,10 +179,16 @@ const deleteBudgetExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (expenseId: number) => {
-      const res = await axiosPublic.delete(`budget/${expenseId}/expense`);
+      const res = await api.delete(`budget/${expenseId}/expense`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {
@@ -160,6 +210,8 @@ const createBudget = (
   >
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (budget: {
@@ -168,7 +220,11 @@ const createBudget = (
       amount: string;
       description?: string | null;
     }) => {
-      const res = await axiosPublic.post(`budget/`, budget);
+      const res = await api.post(`budget/`, budget, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {

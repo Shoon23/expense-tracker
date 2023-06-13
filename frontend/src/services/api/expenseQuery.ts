@@ -8,15 +8,23 @@ import {
 import { useState } from "react";
 import { axiosPublic } from "../axiosInstance";
 import { fa } from "@faker-js/faker";
+import usePrivateRoutes from "../../hooks/usePrivateRoutes";
+import { iUser } from "../../types/user";
 
 // line chart
 const getMonthlyExpenseTrend = (userId: number) => {
+  const api = usePrivateRoutes();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery(
     ["pieChart"],
     async () => {
-      const res = await axiosPublic.get(
-        `/chart/monthly-expense-trend/${userId}`
-      );
+      const res = await api.get(`/chart/monthly-expense-trend/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     {
@@ -26,12 +34,17 @@ const getMonthlyExpenseTrend = (userId: number) => {
 };
 // doughnut chart
 const getCategoryDistribution = (userId: number) => {
+  const api = usePrivateRoutes();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
   return useQuery(
     ["doughnutChart"],
     async () => {
-      const res = await axiosPublic.get(
-        `/chart/category-distribution/${userId}`
-      );
+      const res = await api.get(`/chart/category-distribution/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     {
@@ -46,10 +59,18 @@ interface iResultDb {
   budgetList: Array<iDdBudget>;
 }
 const getDashboard = (userId: number): UseQueryResult<iResultDb, unknown> => {
+  const api = usePrivateRoutes();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
-      const res = await axiosPublic.get(`/expense/${userId}/dashboard`);
+      const res = await api.get(`/expense/${userId}/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     refetchOnWindowFocus: true,
@@ -70,14 +91,21 @@ const getAllExpenes = (
   categoryFilter?: number,
   dateFilter?: number
 ) => {
+  const api = usePrivateRoutes();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<iResultExpense, unknown>(["expenses", page], async () => {
-    const res = await axiosPublic.get(`/expense/${userId}`, {
+    const res = await api.get(`/expense/${userId}`, {
       params: {
         searchKey,
         page,
         budgetFilter,
         categoryFilter,
         dateFilter,
+      },
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
       },
     });
     return res.data;
@@ -86,6 +114,10 @@ const getAllExpenes = (
 // get date as a option
 
 const getDates = (userId: number) => {
+  const api = usePrivateRoutes();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<
     Array<{
       id: number;
@@ -93,7 +125,11 @@ const getDates = (userId: number) => {
     }>,
     unknown
   >(["dateExpenseOptions"], async () => {
-    const res = await axiosPublic.get(`/expense/${userId}/dates`);
+    const res = await api.get(`/expense/${userId}/dates`, {
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
+      },
+    });
     return res.data;
   });
 };
@@ -103,6 +139,9 @@ const updateExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useMutation({
     mutationFn: async (expense: {
       name?: string;
@@ -111,7 +150,11 @@ const updateExpense = (
       categoryId?: number | null;
       budgetId?: number | null;
     }) => {
-      const res = await axiosPublic.put("/expense", expense);
+      const res = await api.put("/expense", expense, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess(data, variables, context) {
@@ -127,13 +170,19 @@ const deleteExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (expenseId: number) => {
-      const res = await axiosPublic.delete(`expense/${expenseId}`);
+      const res = await api.delete(`expense/${expenseId}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
-    onSuccess(data, variables, context) {
+    onSuccess() {
       queryClient.invalidateQueries(["expenses"]);
       setShowModal(false);
     },
@@ -154,6 +203,8 @@ const createExpense = (
   setShowModal?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (expenseData: {
@@ -163,7 +214,11 @@ const createExpense = (
       budgetId?: number | null | undefined;
       categoryId?: number | null | undefined;
     }) => {
-      const res = await axiosPublic.post(`expense`, expenseData);
+      const res = await api.post(`expense`, expenseData, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {

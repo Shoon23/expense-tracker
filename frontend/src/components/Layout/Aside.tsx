@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet, Link } from "react-router-dom";
 import {
   IconCategory,
@@ -9,12 +9,12 @@ import {
   IconChartBar,
 } from "@tabler/icons-react";
 import { Toaster } from "react-hot-toast";
-import { AddModal } from "../Expenses";
+import authQuery from "../../services/api/authQuery";
 
 const Aside = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sidebarRef = useRef<HTMLBaseElement>(null);
-
+  const { mutateAsync } = authQuery.logout();
   const handleCloseSidebar = () => {
     setIsVisible(false);
   };
@@ -130,11 +130,8 @@ const Aside = () => {
               </Link>
             </li>
 
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
+            <li onClick={() => mutateAsync()}>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                 <IconArrowBarToLeft
                   size={24}
                   className="stroke-rose-500"

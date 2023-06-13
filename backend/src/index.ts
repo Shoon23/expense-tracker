@@ -7,6 +7,7 @@ import expenseRoutes from "./routes/expenseRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import budgetRoutes from "./routes/budgetRoutes";
 import chartRoutes from "./routes/chartRoute";
+import verifyAccessToken from "./middleware/verifyAccessToken";
 
 const app = express();
 const port = process.env.PORT || 1234;
@@ -20,6 +21,7 @@ app.use(
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.json());
 app.use("/auth", authRoutes);
+app.use(verifyAccessToken);
 app.use("/expense", expenseRoutes);
 app.use("/category", categoryRoutes);
 app.use("/budget", budgetRoutes);

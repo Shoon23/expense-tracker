@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosPublic } from "../axiosInstance";
+import usePrivateRoutes from "../../hooks/usePrivateRoutes";
+import { iUser } from "../../types/user";
 
 // get all categories
 
@@ -15,11 +17,18 @@ interface iResultsCategories {
 }
 
 const getAll = (userId: number, page: number, searchKey?: string) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<iResultsCategories, unknown>(["categories"], async () => {
-    const res = await axiosPublic.get(`/category/${userId}`, {
+    const res = await api.get(`/category/${userId}`, {
       params: {
         page,
         searchKey,
+      },
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
       },
     });
     return res.data;
@@ -28,6 +37,10 @@ const getAll = (userId: number, page: number, searchKey?: string) => {
 
 // get category as an option
 const getCategoryOptions = (userId: number) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<
     Array<{
       id: number;
@@ -35,7 +48,11 @@ const getCategoryOptions = (userId: number) => {
     }>,
     unknown
   >(["categoryOptions"], async () => {
-    const res = await axiosPublic.get(`/category/${userId}/options`);
+    const res = await api.get(`/category/${userId}/options`, {
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`,
+      },
+    });
     return res.data;
   });
 };
@@ -59,13 +76,20 @@ const getCategoryExpenses = (
   page: number,
   searchKey?: string
 ) => {
+  const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useQuery<iResultsExpenses, unknown>(
     ["categoryExpenses", page],
     async () => {
-      const res = await axiosPublic.get(`category/${categoryId}/expense`, {
+      const res = await api.get(`category/${categoryId}/expense`, {
         params: {
           page,
           searchKey,
+        },
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
         },
       });
 
@@ -80,6 +104,8 @@ const updateCategory = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (category: {
@@ -87,7 +113,11 @@ const updateCategory = (
       name?: string;
       description?: string | null;
     }) => {
-      const res = await axiosPublic.put(`/category`, category);
+      const res = await api.put(`/category`, category, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {
@@ -102,9 +132,16 @@ const deleteCategory = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useMutation({
     mutationFn: async (categoryId: number) => {
-      const res = await axiosPublic.delete(`/category/${categoryId}`);
+      const res = await api.delete(`/category/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {
@@ -119,10 +156,16 @@ const deleteCategoryExpense = (
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
 
   return useMutation({
     mutationFn: async (expenseId: number) => {
-      const res = await axiosPublic.delete(`category/${expenseId}/expense`);
+      const res = await api.delete(`category/${expenseId}/expense`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {
@@ -143,13 +186,20 @@ const createCategory = (
   >
 ) => {
   const queryClient = useQueryClient();
+  const api = usePrivateRoutes();
+  const user = queryClient.getQueryData<iUser>(["user"]);
+
   return useMutation({
     mutationFn: async (category: {
       userId: number;
       name: string;
       description?: string | null;
     }) => {
-      const res = await axiosPublic.post(`/category`, category);
+      const res = await api.post(`/category`, category, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
       return res.data;
     },
     onSuccess() {

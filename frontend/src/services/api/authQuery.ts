@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosPublic } from "../axiosInstance";
-import { iLoginCredentials, iRegisterCredentials } from "../../types/user";
+import {
+  iLoginCredentials,
+  iRegisterCredentials,
+  iUser,
+} from "../../types/user";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -78,7 +82,7 @@ const register = () => {
 
 // refresh auth tokens
 const refreshToken = (accessToken: string) => {
-  return useQuery(
+  return useQuery<iUser, unknown>(
     ["user"],
     async () => {
       const res = await axiosPublic.get("/auth/refresh");
@@ -93,4 +97,23 @@ const refreshToken = (accessToken: string) => {
   );
 };
 
-export default { login, register, refreshToken };
+// logout
+
+const logout = () => {
+  const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await axiosPublic.post("/auth/logout");
+      return res.data;
+    },
+    onSuccess() {
+      queryClient.clear();
+      navigate("/login");
+    },
+  });
+};
+
+export default { logout, login, register, refreshToken };
