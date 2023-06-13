@@ -37,6 +37,9 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
             },
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       }),
       prisma?.category?.count({
         where,

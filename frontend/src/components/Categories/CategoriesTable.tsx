@@ -5,12 +5,13 @@ import categoryQuery from "../../services/api/categoryQuery";
 import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../../types/user";
 import stringUtils from "../../utils/stringUtils";
+import Loading from "../common/Loading";
 const CategoriesTable = () => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<iUser>(["user"]);
   const [page, setPage] = useState(1);
   const [searchKey, setSearchKey] = useState<string | undefined>();
-  const { data, isLoading, refetch } = categoryQuery?.getAll(
+  const { data, isLoading, refetch, isError } = categoryQuery?.getAll(
     user?.id as number,
     page,
     searchKey
@@ -85,7 +86,19 @@ const CategoriesTable = () => {
         </thead>
         <tbody>
           {isLoading ? (
-            <div>loadingg</div>
+            <tr>
+              <td colSpan={5} className="text-center ">
+                <div className="flex justify-center my-4 items-center h-full">
+                  <Loading />
+                </div>
+              </td>
+            </tr>
+          ) : isError ? (
+            <tr>
+              <td colSpan={6} className="text-center text-red-600 ">
+                Error occurred while fetching data.
+              </td>
+            </tr>
           ) : data && data?.categoryList?.length > 0 ? (
             data?.categoryList?.map((category) => (
               <tr
@@ -114,7 +127,11 @@ const CategoriesTable = () => {
               </tr>
             ))
           ) : (
-            <div>empty</div>
+            <tr>
+              <td colSpan={6} className="text-center">
+                No data available.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

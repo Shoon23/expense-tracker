@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { iUser } from "../types/user";
 import expenseQuery from "../services/api/expenseQuery";
 import { useState } from "react";
+import Loading from "../components/common/Loading";
 
 const Home = () => {
   const queryClient = useQueryClient();
@@ -26,7 +27,7 @@ const Home = () => {
     error,
     isError,
   } = expenseQuery.getDashboard(user?.id as number);
-  console.log(recentData);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -158,7 +159,11 @@ const Home = () => {
         <div className="self-center h-[400px]">
           <DoughnutChart userId={user?.id as number} />
         </div>
-        <TransactionTable expenseList={recentData?.expenseList || []} />
+        <TransactionTable
+          expenseList={recentData?.expenseList || []}
+          isLoading={isLoading}
+          isError={isError}
+        />
       </div>
     </>
   );

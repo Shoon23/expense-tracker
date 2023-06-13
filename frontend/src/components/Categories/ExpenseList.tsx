@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import categoryQuery from "../../services/api/categoryQuery";
 import { PopUpDeleteModal } from "../common";
+import Loading from "../common/Loading";
 
 interface Props {
   categoryId: number;
@@ -9,11 +10,8 @@ interface Props {
 const ExpenseList: React.FC<Props> = ({ categoryId }) => {
   const [page, setPage] = useState(1);
   const [searchKey, setSearchKey] = useState<string | undefined>();
-  const { data, isLoading, refetch } = categoryQuery?.getCategoryExpenses(
-    categoryId,
-    page,
-    searchKey
-  );
+  const { data, isLoading, refetch, isError } =
+    categoryQuery?.getCategoryExpenses(categoryId, page, searchKey);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -79,7 +77,19 @@ const ExpenseList: React.FC<Props> = ({ categoryId }) => {
         </thead>
         <tbody>
           {isLoading ? (
-            <div>Loading....</div>
+            <tr>
+              <td colSpan={5} className="text-center ">
+                <div className="flex justify-center my-4 items-center h-full">
+                  <Loading />
+                </div>
+              </td>
+            </tr>
+          ) : isError ? (
+            <tr>
+              <td colSpan={6} className="text-center text-red-600 ">
+                Error occurred while fetching data.
+              </td>
+            </tr>
           ) : data?.expenseList && data?.expenseList?.length > 0 ? (
             data?.expenseList.map((expense) => (
               <tr
@@ -105,7 +115,11 @@ const ExpenseList: React.FC<Props> = ({ categoryId }) => {
               </tr>
             ))
           ) : (
-            <div>empty</div>
+            <tr>
+              <td colSpan={6} className="text-center">
+                No data available.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

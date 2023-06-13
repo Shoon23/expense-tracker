@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { PopUpDeleteModal } from "../common";
 import budgetQuery from "../../services/api/budgetQuery";
 import { UseMutationResult } from "@tanstack/react-query";
+import Loading from "../common/Loading";
 
 interface Props {
   budgetId: number;
@@ -10,7 +11,7 @@ interface Props {
 const ExpenseList: React.FC<Props> = ({ budgetId }) => {
   const [page, setPage] = useState(1);
   const [searchKey, setSearchKey] = useState<string | undefined>();
-  const { data, isLoading, refetch } = budgetQuery.getBudgetExpenses(
+  const { data, isLoading, refetch, isError } = budgetQuery.getBudgetExpenses(
     budgetId,
     page
   );
@@ -77,7 +78,19 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
         </thead>
         <tbody>
           {isLoading ? (
-            <div>Loading....</div>
+            <tr>
+              <td colSpan={5} className="text-center ">
+                <div className="flex justify-center my-4 items-center h-full">
+                  <Loading />
+                </div>
+              </td>
+            </tr>
+          ) : isError ? (
+            <tr>
+              <td colSpan={6} className="text-center text-red-600 ">
+                Error occurred while fetching data.
+              </td>
+            </tr>
           ) : data?.expenseList && data?.expenseList?.length > 0 ? (
             data?.expenseList.map((expense) => (
               <tr
@@ -105,7 +118,11 @@ const ExpenseList: React.FC<Props> = ({ budgetId }) => {
               </tr>
             ))
           ) : (
-            <div>empty</div>
+            <tr>
+              <td colSpan={6} className="text-center">
+                No data available.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

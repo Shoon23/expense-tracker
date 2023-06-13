@@ -7,24 +7,34 @@ import { DropDown } from "../common";
 import { iUser } from "../../types/user";
 import stringUtils from "../../utils/stringUtils";
 import AddModal from "./AddModal";
+import Loading from "../common/Loading";
 const BudgetTable = () => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<iUser>(["user"]);
+
+  // filter
   const [dateFilter, setDateFilter] = useState<any>({});
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [page, setPage] = useState(1);
-  const { data, isLoading, refetch } = budgetQuery.getBudgets(
+
+  // queries
+  const { data, isLoading, refetch, isError } = budgetQuery.getBudgets(
     user?.id as number,
     page,
     searchKey,
     dateFilter.id
   );
-  const { data: datesOptions } = budgetQuery.getDates(user?.id as number);
+  const {
+    data: datesOptions,
+    isLoading: dateLoading,
+    isError: dateError,
+  } = budgetQuery.getDates(user?.id as number);
 
   useEffect(() => {
     refetch();
   }, [dateFilter]);
 
+  // event handler
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       setPage(1);
@@ -73,6 +83,8 @@ const BudgetTable = () => {
             />
           </div>
           <DropDown
+            isError={dateError}
+            isLoading={dateLoading}
             options={datesOptions}
             selected={dateFilter}
             name={"Dates"}
@@ -106,7 +118,19 @@ const BudgetTable = () => {
         </thead>
         <tbody>
           {isLoading ? (
-            <div>loading...</div>
+            <tr>
+              <td colSpan={6} className="text-center ">
+                <div className="flex justify-center my-4 items-center h-full">
+                  <Loading />
+                </div>
+              </td>
+            </tr>
+          ) : isError ? (
+            <tr>
+              <td colSpan={6} className="text-center text-red-600 ">
+                Error occurred while fetching data.
+              </td>
+            </tr>
           ) : data?.budgetList && data?.budgetList.length > 0 ? (
             data?.budgetList.map((budget) => {
               return (
@@ -139,7 +163,11 @@ const BudgetTable = () => {
               );
             })
           ) : (
-            <div>empty</div>
+            <tr>
+              <td colSpan={6} className="text-center">
+                No data available.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

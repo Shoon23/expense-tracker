@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Loading from "./Loading";
 
 interface Props {
   options:
@@ -13,7 +14,8 @@ interface Props {
     name?: string;
     createdAt?: string;
   };
-
+  isLoading: boolean;
+  isError: boolean;
   name: string;
   handleOptionSelect: (optionName: any) => void;
 }
@@ -23,6 +25,8 @@ const DropDown: React.FC<Props> = ({
   selected,
   name,
   handleOptionSelect,
+  isError,
+  isLoading,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -58,34 +62,46 @@ const DropDown: React.FC<Props> = ({
           className="z-10 absolute w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         >
           <ul className="p-3 space-y-1 text-sm text-gray-700 ">
-            <li>
-              <div
-                onClick={() => {
-                  handleOptionSelect({});
-                  setIsOpen(false);
-                }}
-                className="flex items-center p-2 rounded hover:bg-gray-100 "
-              >
-                <label className="w-full ml-2 text-sm font-medium text-gray-900 rounded ">
-                  N/A
-                </label>
+            {isLoading ? (
+              <div className="text-center">
+                <Loading />
               </div>
-            </li>
-            {options?.map((option) => (
-              <li key={option.id}>
-                <div
-                  onClick={() => {
-                    handleOptionSelect(option);
-                    setIsOpen(false);
-                  }}
-                  className="flex items-center p-2 rounded hover:bg-gray-100 "
-                >
-                  <label className="w-full ml-2 text-sm font-medium text-gray-900 rounded ">
-                    {option?.name || option.createdAt}
-                  </label>
-                </div>
-              </li>
-            ))}
+            ) : isError ? (
+              <p className="text-center text-red-600">
+                Error occurred while fetching data.
+              </p>
+            ) : (
+              <>
+                <li>
+                  <div
+                    onClick={() => {
+                      handleOptionSelect({});
+                      setIsOpen(false);
+                    }}
+                    className="flex items-center p-2 rounded hover:bg-gray-100 "
+                  >
+                    <label className="w-full ml-2 text-sm font-medium text-gray-900 rounded ">
+                      N/A
+                    </label>
+                  </div>
+                </li>
+                {options?.map((option) => (
+                  <li key={option.id}>
+                    <div
+                      onClick={() => {
+                        handleOptionSelect(option);
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center p-2 rounded hover:bg-gray-100 "
+                    >
+                      <label className="w-full ml-2 text-sm font-medium text-gray-900 rounded ">
+                        {option?.name || option.createdAt}
+                      </label>
+                    </div>
+                  </li>
+                ))}
+              </>
+            )}
           </ul>
         </div>
       )}

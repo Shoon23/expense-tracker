@@ -1,5 +1,6 @@
 import { UseMutationResult } from "@tanstack/react-query";
 import React, { useState } from "react";
+import Loading from "./Loading";
 
 interface Props {
   id: number;
@@ -11,7 +12,7 @@ interface Props {
 
 const PopUpDeleteModal: React.FC<Props> = ({ id, prompt, deleteQuery }) => {
   const [showModal, setShowModal] = useState(false);
-  const { mutateAsync, isError, error } = deleteQuery(setShowModal);
+  const { mutateAsync, isError, isLoading } = deleteQuery(setShowModal);
   const handleShowModal = () => {
     setShowModal(!showModal);
   };
@@ -88,7 +89,7 @@ const PopUpDeleteModal: React.FC<Props> = ({ id, prompt, deleteQuery }) => {
                   type="button"
                   className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
                 >
-                  Yes, I'm sure
+                  {isLoading ? <Loading /> : "Yes, I'm sure"}
                 </button>
                 <button
                   onClick={() => setShowModal(false)}

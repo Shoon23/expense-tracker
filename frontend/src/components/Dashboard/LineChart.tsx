@@ -13,6 +13,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
 import expenseQuery from "../../services/api/expenseQuery";
+import Loading from "../common/Loading";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,7 +30,11 @@ interface Props {
 }
 
 const LineChart: React.FC<Props> = ({ userId }) => {
-  const { data: resData } = expenseQuery.getMonthlyExpenseTrend(userId);
+  const {
+    data: resData,
+    isLoading,
+    isError,
+  } = expenseQuery.getMonthlyExpenseTrend(userId);
 
   const monthLabels = Object.keys(resData ?? []);
   const expenseValues = Object.values(resData ?? []);
@@ -61,14 +66,23 @@ const LineChart: React.FC<Props> = ({ userId }) => {
     maintainAspectRatio: false,
   };
 
-  return <Line options={options} data={data} />;
+  return isLoading ? (
+    <div className="flex items-center justify-center h-full w-full">
+      <Loading />
+    </div>
+  ) : isError ? (
+    <div className="flex items-center justify-center h-full w-full">
+      <p className="text-center text-red-600 ">
+        Error occurred while fetching data.
+      </p>
+    </div>
+  ) : resData ? (
+    <Line options={options} data={data} />
+  ) : (
+    <div className="flex items-center justify-center h-full w-full">
+      <p className="text-center ">No Data Available</p>
+    </div>
+  );
 };
 
-//  Object.entries(resData || []).map(([key, value]) => ({
-//       fill: false,
-//       label: key,
-//       data: value,
-//       borderColor: "rgb(53, 162, 235)",
-//       backgroundColor: "rgba(53, 162, 235, 0.5)",
-//     })),
 export default LineChart;

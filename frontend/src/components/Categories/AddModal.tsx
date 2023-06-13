@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { UpdateForm } from ".";
 import categoryQuery from "../../services/api/categoryQuery";
+import Loading from "../common/Loading";
 
 interface Props {
   userId: number;
@@ -20,7 +21,8 @@ const AddModal: React.FC<Props> = ({ userId }) => {
     name: string;
     description?: string | null;
   }>(initialCategoryData);
-  const { mutateAsync } = categoryQuery?.createCategory(
+  // query
+  const { mutateAsync, isLoading, isError } = categoryQuery?.createCategory(
     setShowModal,
     setCategoryData
   );
@@ -102,6 +104,12 @@ const AddModal: React.FC<Props> = ({ userId }) => {
               </div>
 
               <form onSubmit={handleSubmit} className="p-6">
+                {isError && (
+                  <p className="mb-2 text-sm text-red-600 dark:text-red-500">
+                    <span className="font-medium">Oops!</span> Something went
+                    wrong
+                  </p>
+                )}
                 <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                   <div className="sm:col-span-2">
                     <label
@@ -154,7 +162,7 @@ const AddModal: React.FC<Props> = ({ userId }) => {
                     type="submit"
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                   >
-                    Add
+                    {isLoading ? <Loading /> : "Add"}
                   </button>
                   <button
                     onClick={handleShowModal}

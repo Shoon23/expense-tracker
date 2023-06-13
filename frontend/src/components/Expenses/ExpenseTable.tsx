@@ -8,6 +8,7 @@ import { DropDown } from "../common";
 import budgetQuery from "../../services/api/budgetQuery";
 import categoryQuery from "../../services/api/categoryQuery";
 import { AddModal } from ".";
+import Loading from "../common/Loading";
 
 const ExpenseTable = () => {
   const queryClient = useQueryClient();
@@ -22,7 +23,7 @@ const ExpenseTable = () => {
   const [page, setPage] = useState(1);
 
   // queries
-  const { data, refetch } = expenseQuery.getAllExpenes(
+  const { data, refetch, isLoading, isError } = expenseQuery.getAllExpenes(
     user?.id as number,
     page,
     searchKey,
@@ -31,14 +32,23 @@ const ExpenseTable = () => {
     dateFilter.id
   );
 
-  const { data: dates } = expenseQuery.getDates(user?.id as number);
-  const { data: budgetOptions } = budgetQuery.getBudgetOptions(
-    user?.id as number
-  );
+  const {
+    data: dates,
+    isLoading: getDatesLoading,
+    isError: errorDates,
+  } = expenseQuery.getDates(user?.id as number);
 
-  const { data: categoryOptions } = categoryQuery.getCategoryOptions(
-    user?.id as number
-  );
+  const {
+    data: budgetOptions,
+    isLoading: getBudgetsLoading,
+    isError: errorBudgets,
+  } = budgetQuery.getBudgetOptions(user?.id as number);
+
+  const {
+    data: categoryOptions,
+    isLoading: getCategoryLoading,
+    isError: errorCategory,
+  } = categoryQuery.getCategoryOptions(user?.id as number);
 
   useEffect(() => {
     refetch();
@@ -103,18 +113,24 @@ const ExpenseTable = () => {
             />
           </div>
           <DropDown
+            isError={errorBudgets}
+            isLoading={getBudgetsLoading}
             options={budgetOptions}
             selected={budgetFilter}
             name="Budgets"
             handleOptionSelect={handleBudgetFilterSelect}
           />
           <DropDown
+            isError={errorCategory}
+            isLoading={getCategoryLoading}
             options={categoryOptions}
             selected={categoryFilter}
             name="Category"
             handleOptionSelect={handleCategoryFilterSelect}
           />
           <DropDown
+            isError={errorDates}
+            isLoading={getDatesLoading}
             options={dates}
             selected={dateFilter}
             name="Date"
@@ -149,41 +165,65 @@ const ExpenseTable = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.expenseList.map((expense) => {
-            return (
-              <tr
-                key={expense.id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          {isLoading ? (
+            <tr>
+              <td colSpan={6} className="text-center ">
+                <div className="flex justify-center my-4 items-center h-full">
+                  <Loading />
+                </div>
+              </td>
+            </tr>
+          ) : isError ? (
+            <tr>
+              <td colSpan={6} className="text-center text-red-600 ">
+                Error occurred while fetching data.
+              </td>
+            </tr>
+          ) : data?.expenseList && data?.expenseList.length > 0 ? (
+            data?.expenseList.map((expense) => {
+              return (
+                <tr
+                  key={expense.id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
-                  {expense.name}
-                </th>
-                <td className="px-6 py-3">{expense.amount}</td>
-                <td className="px-6 py-3">
-                  {expense?.category?.name || "N/A"}
-                </td>
-                <td className="px-6 py-3">{expense?.budget?.name || "N/A"}</td>
-                <td className="px-6 py-3">{expense.createdAt}</td>
+                  <th
+                    scope="row"
+                    className="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    {expense.name}
+                  </th>
+                  <td className="px-6 py-3">{expense.amount}</td>
+                  <td className="px-6 py-3">
+                    {expense?.category?.name || "N/A"}
+                  </td>
+                  <td className="px-6 py-3">
+                    {expense?.budget?.name || "N/A"}
+                  </td>
+                  <td className="px-6 py-3">{expense.createdAt}</td>
 
-                <td className="px-6 py-3 flex gap-1">
-                  <UpdateBtn
-                    expense={expense}
-                    budgetOptions={budgetOptions}
-                    categoryOptions={categoryOptions}
-                  />
+                  <td className="px-6 py-3 flex gap-1">
+                    <UpdateBtn
+                      expense={expense}
+                      budgetOptions={budgetOptions}
+                      categoryOptions={categoryOptions}
+                    />
 
-                  <PopUpDeleteModal
-                    prompt="Are you sure you want to delete this expense?"
-                    id={expense.id}
-                    deleteQuery={expenseQuery.deleteExpense}
-                  />
-                </td>
-              </tr>
-            );
-          })}
+                    <PopUpDeleteModal
+                      prompt="Are you sure you want to delete this expense?"
+                      id={expense.id}
+                      deleteQuery={expenseQuery.deleteExpense}
+                    />
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={6} className="text-center text-lg">
+                No data available.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       <nav
