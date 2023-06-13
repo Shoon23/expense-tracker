@@ -178,7 +178,9 @@ const BudgetTable = () => {
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
           Showing{" "}
           <span className="font-semibold text-gray-900 dark:text-white">
-            1-10
+            {data?.budgetList && data?.budgetList.length > 0
+              ? `1-${data?.budgetList.length}`
+              : "0"}
           </span>{" "}
         </span>
         <ul className="inline-flex items-center -space-x-px">

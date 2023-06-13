@@ -99,7 +99,7 @@ const CategoriesTable = () => {
                 Error occurred while fetching data.
               </td>
             </tr>
-          ) : data && data?.categoryList?.length > 0 ? (
+          ) : data?.categoryList && data?.categoryList?.length > 0 ? (
             data?.categoryList?.map((category) => (
               <tr
                 key={category?.id}
@@ -142,8 +142,10 @@ const CategoriesTable = () => {
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
           Showing
           <span className="font-semibold text-gray-900 dark:text-white">
-            1-10
-          </span>
+            {data?.categoryList && data?.categoryList.length > 0
+              ? `1-${data?.categoryList.length}`
+              : "0"}
+          </span>{" "}
         </span>
         <ul className="inline-flex items-center -space-x-px">
           <li

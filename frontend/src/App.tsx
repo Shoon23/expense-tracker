@@ -11,12 +11,14 @@ import PersistAuth from "./middleware/PersistAuth";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import Expenses from "./pages/Expenses";
 import Budgets from "./pages/Budgets";
-
+import CheckAuth from "./middleware/CheckAuth";
+import Error404 from "./pages/Error404";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     element: <PersistAuth />,
+    errorElement: <Error404 />,
     children: [
       {
         element: <ProtectedRoutes />,
@@ -49,12 +51,17 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/register",
-        element: <Register />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
+        element: <CheckAuth />,
+        children: [
+          {
+            path: "/register",
+            element: <Register />,
+          },
+          {
+            path: "/login",
+            element: <Login />,
+          },
+        ],
       },
     ],
   },
