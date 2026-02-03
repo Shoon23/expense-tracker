@@ -11,7 +11,7 @@ import verifyAccessToken from "./middleware/verifyAccessToken";
 import { env } from "./env";
 
 const app = express();
-const port = env.PORT;
+const port = env.PORT || 3000;
 
 app.use(
   cors({
