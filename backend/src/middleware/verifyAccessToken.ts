@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
 import jwt, { TokenExpiredError, JsonWebTokenError } from "jsonwebtoken";
+import { env } from "../env";
 
 export default (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -9,7 +10,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError("Missing Token", 409);
     }
     const accessToken = authHeader.split(" ")[1];
-    jwt.verify(accessToken, process.env.JWT_ACCESS as string);
+    jwt.verify(accessToken, env.JWT_ACCESS);
     next();
   } catch (error) {
     if (

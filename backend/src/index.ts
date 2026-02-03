@@ -8,17 +8,18 @@ import categoryRoutes from "./routes/categoryRoutes";
 import budgetRoutes from "./routes/budgetRoutes";
 import chartRoutes from "./routes/chartRoute";
 import verifyAccessToken from "./middleware/verifyAccessToken";
+import { env } from "./env";
 
 const app = express();
-const port = process.env.PORT || 1234;
+const port = env.PORT;
 
 app.use(
   cors({
     credentials: true,
     origin: "http://localhost:5173",
-  })
+  }),
 );
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(env.COOKIE_SECRET));
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use(verifyAccessToken);

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import CustomError from "../utils/CustomError";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import buildWhereClause from "../utils/buildWhereClause";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -52,7 +52,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
         (total, expense: { isDelete: boolean }) => {
           return expense?.isDelete ? total : total + 1;
         },
-        0
+        0,
       ),
     }));
 
@@ -69,7 +69,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 const getAsOptions = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
 
@@ -97,7 +97,7 @@ const getAsOptions = async (
 const getAllExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const categoryId = req.params.categoryId;
 
@@ -169,7 +169,7 @@ const categoryCreateSchema = Joi.object({
 const createCategory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await categoryCreateSchema.validateAsync(req.body, {
@@ -197,7 +197,7 @@ const categoryUpdateSchema = Joi.object({
 const updateCategory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await categoryUpdateSchema.validateAsync(req.body, {
@@ -219,7 +219,7 @@ const updateCategory = async (
 const deleteCategory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const categoryId = req.params.categoryId;
   try {
@@ -245,7 +245,7 @@ const deleteCategory = async (
 const deleteCategoryExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const expenseId = req?.params?.expenseId;
   try {

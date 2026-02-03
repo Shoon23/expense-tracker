@@ -2,11 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
+  "description": "Backend API service",
   "scripts": {
-    "build:dev": "webpack --config webpack.config.dev.js",
-    "build:prod": "webpack --config webpack.config.prod.js",
-    "start": "node dist/bundle.js",
-    "dev": "nodemon --config nodemon.json "
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --config nodemon.json",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
@@ -16,10 +19,13 @@
     "argon2": "^0.30.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
-    "node": "^20.1.0"
+    "node": "^20.1.0",
+    "zenvx": "^1.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
@@ -29,12 +35,6 @@
     "@types/node": "^20.1.7",
     "nodemon": "^2.0.22",
     "prisma": "^4.14.1",
-    "ts-loader": "^9.4.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "webpack": "^5.82.1",
-    "webpack-cli": "^5.1.1",
-    "webpack-node-externals": "^3.0.0"
-  },
-  "description": ""
+    "typescript": "^5.0.4"
+  }
 }

@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import { Prisma } from "@prisma/client";
 import * as argon2 from "argon2";
 import generateToken from "../utils/generateToken";
 import jwt from "jsonwebtoken";
 import Joi from "joi";
+import { env } from "../env";
 
 // req body schema for register
 const registerSchema = Joi.object({
@@ -18,7 +19,7 @@ const registerSchema = Joi.object({
 const registerController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await registerSchema.validateAsync(req.body, {
@@ -59,7 +60,7 @@ const registerController = async (
       httpOnly: true,
       sameSite: "strict",
       signed: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       path: "/",
     });
     res.status(201).json({ ...createUser, accessToken });
@@ -77,7 +78,7 @@ const loginSchema = Joi.object({
 const loginController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await loginSchema.validateAsync(req.body, {
@@ -116,7 +117,7 @@ const loginController = async (
       httpOnly: true,
       sameSite: "strict",
       signed: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       path: "/",
     });
     res.status(201).json({ ...other, accessToken });
@@ -134,11 +135,11 @@ const logoutController = async (req: Request, res: Response) => {
 const refreshToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.signedCookies.refreshToken;
   try {
-    const checkToken = jwt.verify(token, process.env.JWT_REFRESH as string) as {
+    const checkToken = jwt.verify(token, env.JWT_REFRESH) as {
       id: number;
       iat: number;
       exp: number;
@@ -166,7 +167,7 @@ const refreshToken = async (
       httpOnly: true,
       sameSite: "strict",
       signed: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       path: "/",
     });
     res.status(200).json({ ...checkUser, accessToken });

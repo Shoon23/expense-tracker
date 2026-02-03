@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import CustomError from "../utils/CustomError";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import Joi from "joi";
 import buildWhereClause from "../utils/buildWhereClause";
 
@@ -59,7 +59,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
         (total: number, expense: { isDelete: boolean }) => {
           return expense?.isDelete ? total : total + 1;
         },
-        0
+        0,
       ),
     }));
     const isLastPage =
@@ -75,7 +75,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 const getDistinctDate = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
 
@@ -105,7 +105,7 @@ const getDistinctDate = async (
 const getAsOptions = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
 
@@ -140,7 +140,7 @@ const budgetCreateSchema = Joi.object({
 const createBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await budgetCreateSchema.validateAsync(req.body, {
@@ -168,7 +168,7 @@ const budgetUpdateSchema = Joi.object({
 const updateBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await budgetUpdateSchema.validateAsync(req.body, {
@@ -200,7 +200,7 @@ const updateBudget = async (
 const deleteBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const budgetId = req.params.budgetId;
   try {
@@ -225,7 +225,7 @@ const deleteBudget = async (
 const getAllExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const budgetId = req.params.budgetId;
 
@@ -290,7 +290,7 @@ const getAllExpense = async (
 const deleteBudgetExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const expenseId = req?.params?.expenseId;
   try {

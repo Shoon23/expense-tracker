@@ -15,7 +15,7 @@ export default function usePrivateRoutes() {
   const navigate = useNavigate();
 
   const axiosPrivate = axios.create({
-    baseURL: "http://localhost:1234",
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -37,7 +37,7 @@ export default function usePrivateRoutes() {
   };
 
   const onRequest = (
-    config: InternalAxiosRequestConfig
+    config: InternalAxiosRequestConfig,
   ): InternalAxiosRequestConfig => {
     const decoded = jwt_decode<JwtPayload>(user?.accessToken as string);
     const { exp } = decoded;

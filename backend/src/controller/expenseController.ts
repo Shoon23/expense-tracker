@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/CustomError";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import Joi, { date, number } from "joi";
 import buildWhereClause from "../utils/buildWhereClause";
 // get all expense
@@ -98,7 +98,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 const getDistinctDate = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
 
@@ -127,7 +127,7 @@ const getDistinctDate = async (
 const getDashboard = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
   try {
@@ -185,7 +185,7 @@ const getDashboard = async (
       recentExpense: budget.expenses[0] || null,
       expenses: budget.expenses.reduce(
         (total, expense) => Number(total) + Number(expense.amount),
-        0
+        0,
       ),
     }));
 
@@ -207,7 +207,7 @@ const expenseCreateSchema = Joi.object({
 const createExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await expenseCreateSchema.validateAsync(req.body, {
@@ -234,7 +234,7 @@ const expenseUpdateSchema = Joi.object({
 const updateExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const value = await expenseUpdateSchema.validateAsync(req.body, {
@@ -273,7 +273,7 @@ const updateExpense = async (
 const deleteExpense = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const expenseId = req.params.expenseId;
   try {

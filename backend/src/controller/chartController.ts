@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import CustomError from "../utils/CustomError";
 
 const getMonthlyExpenseTrend = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
   try {
@@ -42,7 +42,7 @@ const getMonthlyExpenseTrend = async (
 const getCategoryDistribution = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.params.userId;
   try {
@@ -68,7 +68,7 @@ const getCategoryDistribution = async (
       category: category.name,
       totalExpenses: category.expenses.reduce(
         (total, expense) => total + parseInt(expense.amount),
-        0
+        0,
       ),
     }));
 
