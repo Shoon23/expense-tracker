@@ -16,7 +16,7 @@ const port = env.PORT;
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin: env.CLIENT_URL,
   }),
 );
 app.use(cookieParser(env.COOKIE_SECRET));
