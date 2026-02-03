@@ -2,7 +2,7 @@ import { defineEnv } from "zenvx";
 import z from "zod";
 import "dotenv/config";
 const schema = z.object({
-  PORT: z.number().default(1234),
+  PORT: z.number(),
   COOKIE_SECRET: z.string(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
   CLIENT_URL: z.string(),
