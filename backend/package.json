@@ -5,11 +5,9 @@
   "description": "Backend API service",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon --config nodemon.json",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "dev": "nodemon",
+    "postinstall": "prisma generate",
+    "start:prod": "prisma migrate deploy && node dist/index.js"
   },
   "keywords": [],
   "author": "",
