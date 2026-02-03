@@ -21,6 +21,14 @@ app.use(
 );
 app.use(cookieParser(env.COOKIE_SECRET));
 app.use(express.json());
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    message: "Server is healthy",
+  });
+});
 app.use("/auth", authRoutes);
 app.use(verifyAccessToken);
 app.use("/expense", expenseRoutes);
